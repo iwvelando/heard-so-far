@@ -141,8 +141,8 @@ def read_entry(ctx, through, entry_id):
         evidence_ends.append(span["end"])
     if not evidence_ends or max(evidence_ends) != metadata["evidence_end"]:
         raise ValueError("Archived evidence does not match the declared time limit")
-    # Project old records too: version 1 originally stored the full progress
-    # object, whose track title could be later than this answer's scope.
+    # Return only answer fields: a stored progress object may name a track
+    # beyond this query's scope and must not enter the caller's context.
     return {key: body[key] for key in ("metadata", "question", "answer", "evidence", "status")}
 
 

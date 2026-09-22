@@ -92,7 +92,7 @@ class JournalTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             journal.record(self.payload, self.ctx)
 
-    def test_old_records_never_return_later_progress_titles(self):
+    def test_stored_progress_never_exposes_later_titles(self):
         metadata = journal.record(self.payload, self.ctx)
         path = self.root / "companion/journal" / self.ctx[2] / metadata["id"] / "entry.json"
         body = json.loads(path.read_text())

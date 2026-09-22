@@ -15,6 +15,9 @@ CONTRIBUTING.md
 LICENSE
 Makefile
 README.md
+assets/heard-so-far.svg
+spec/README.md
+spec/external-sources.md
 companion/LOCAL_ONLY.md
 companion/README.md
 companion/check_public.py

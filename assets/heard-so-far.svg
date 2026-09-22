@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-labelledby="title description">
+  <title id="title">A little listening companion</title>
+  <desc id="description">A smiling mint-green snail wears headphones and carries an open book on its warm orange shell. A gold bookmark hangs from the pages. Musical notes, tiny stars, and a dotted trail surround it.</desc>
+  <rect width="960" height="320" rx="24" fill="#faf7ef"/>
+  <path d="M310 238C276 185 299 96 375 69C453 41 531 69 575 106C620 144 650 216 605 248Z" fill="#f4e9c9"/>
+  <ellipse cx="475" cy="276" rx="213" ry="12" fill="#e3e7d9"/>
+
+  <!-- The trail is already behind our listener. -->
+  <path d="M112 245C155 220 192 270 227 246S272 232 295 254" fill="none" stroke="#a3b8a3" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 13"/>
+  <g fill="none" stroke="#365852" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M249 256V224M249 243C234 245 225 235 227 224C243 225 250 232 249 243" fill="#b5cbb0"/>
+    <path d="M249 236C262 236 270 227 268 215C253 218 249 225 249 236" fill="#d4deaf"/>
+    <path d="M729 261V231M729 250C742 250 752 240 750 230C737 232 730 240 729 250" fill="#b5cbb0"/>
+  </g>
+
+  <!-- A soft body and a very unhurried smile. -->
+  <path d="M292 263C331 251 342 229 378 230L565 229C580 229 580 214 583 194C587 174 603 162 623 163C650 164 667 184 666 211C665 247 640 266 609 270L342 270C320 270 302 268 292 263Z" fill="#b9d4b9" stroke="#365852" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M335 259C399 261 479 258 550 260" fill="none" stroke="#8bb69d" stroke-width="3" stroke-linecap="round"/>
+  <path d="M608 178L587 129M642 176L653 142" fill="none" stroke="#365852" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="586" cy="127" r="8" fill="#365852"/>
+  <circle cx="654" cy="139" r="8" fill="#365852"/>
+  <circle cx="588" cy="125" r="2" fill="#faf7ef"/>
+  <circle cx="656" cy="137" r="2" fill="#faf7ef"/>
+  <path d="M623 211Q634 224 645 208" fill="none" stroke="#365852" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="609" cy="207" rx="8" ry="5" fill="#e7ad94"/>
+
+  <!-- The shell doubles as a travelling book stand. -->
+  <path d="M371 240C352 223 350 198 360 174C374 143 411 131 445 140C484 150 508 184 500 219C492 250 458 267 424 263C402 261 383 252 371 240Z" fill="#df9871" stroke="#365852" stroke-width="4"/>
+  <path d="M392 240C371 220 376 186 403 175C429 164 460 179 466 201C474 224 453 243 433 239C416 236 411 221 417 211C422 202 437 202 440 211" fill="none" stroke="#965a48" stroke-width="4" stroke-linecap="round"/>
+  <path d="M368 184C374 172 382 164 392 160" fill="none" stroke="#efb692" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- An open book, with a bookmark holding our place. -->
+  <g transform="rotate(-8 437 126)" stroke="#365852" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M346 99L427 117L526 105L522 161L436 174L350 151Z" fill="#547a77" stroke-width="4"/>
+    <path d="M354 91C383 88 407 98 432 115C458 99 487 96 518 100L513 151C483 148 459 155 436 166C408 150 384 143 356 143Z" fill="#fffdf6" stroke-width="3"/>
+    <path d="M432 115L436 166" fill="none" stroke-width="2"/>
+    <g fill="none" stroke="#b7bfa9" stroke-width="2.5">
+      <path d="M369 108Q397 110 418 125M369 120Q396 123 419 137M370 132Q388 133 400 140"/>
+      <path d="M449 122Q468 111 491 113M450 134Q468 123 490 125M451 146Q462 140 474 137"/>
+    </g>
+    <path d="M486 101L484 171L494 163L504 171L506 100" fill="#eac26a" stroke-width="2"/>
+  </g>
+
+  <!-- Cushioned headphones, gently askew. -->
+  <path d="M578 199C568 121 665 110 677 190" fill="none" stroke="#365852" stroke-width="12" stroke-linecap="round"/>
+  <path d="M578 179C580 132 649 117 668 169" fill="none" stroke="#7aa09b" stroke-width="5" stroke-linecap="round"/>
+  <rect x="569" y="181" width="23" height="42" rx="11" fill="#547a77" stroke="#365852" stroke-width="3" transform="rotate(7 580 202)"/>
+  <rect x="660" y="182" width="22" height="40" rx="10" fill="#547a77" stroke="#365852" stroke-width="3" transform="rotate(-9 671 202)"/>
+  <path d="M577 191L577 209M668 192L668 210" stroke="#a8c6bb" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- A few things heard along the way. -->
+  <g fill="none" stroke="#547a77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M230 129V102L249 97V121"/>
+    <ellipse cx="224" cy="131" rx="6" ry="4" fill="#547a77" transform="rotate(-18 224 131)"/>
+    <ellipse cx="243" cy="123" rx="6" ry="4" fill="#547a77" transform="rotate(-18 243 123)"/>
+    <path d="M728 116V91Q739 103 744 98"/>
+    <ellipse cx="722" cy="118" rx="6" ry="4" fill="#547a77" transform="rotate(-18 722 118)"/>
+  </g>
+  <g fill="#eac26a">
+    <path d="M296 76L300 87L311 91L300 95L296 106L292 95L281 91L292 87Z"/>
+    <path d="M780 177L783 185L791 188L783 191L780 199L777 191L769 188L777 185Z"/>
+    <circle cx="688" cy="70" r="4"/>
+    <circle cx="191" cy="184" r="4"/>
+    <circle cx="547" cy="74" r="3"/>
+  </g>
+</svg>

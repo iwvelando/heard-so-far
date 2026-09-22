@@ -2,167 +2,180 @@
 
 An audiobook companion for what you've heard so far.
 
+![A smiling snail wearing headphones carries an open book along a dotted listening trail.](assets/heard-so-far.svg)
+
 heard-so-far grounds summaries and clarification in your locally owned audiobook.
 It extracts the requested, already-heard material, transcribes on Apple silicon,
 and gives a file-capable assistant timestamped evidence to answer from. It is an
-early project under trial, not a guarantee against spoilers or ASR errors. Book
-identity and reading progress are local configuration, not repository defaults.
+early project under trial, not a guarantee against spoilers or automatic speech
+recognition (ASR) errors. Book identity and reading progress are local
+configuration, not repository defaults.
 
 ## Requirements
 
-- macOS on Apple silicon with working Metal/GPU access.
+- macOS on Apple silicon with Metal access to its graphics processing unit (GPU).
 - Python 3.11 or newer, `uv`, `ffmpeg`/`ffprobe`, and `make` installed locally.
 - A locally readable audiobook with embedded chapter markers. No audio, book
   text, model weights, or publisher metadata is distributed with this repository.
-- An agent that can read project instructions, run local commands, and inspect
-  files. AGENTS.md is the shared protocol; CLAUDE.md imports it for Claude Code.
+- An agent powered by a large language model (LLM) that can read project
+  instructions, run local commands, and inspect files. AGENTS.md is the shared
+  protocol; CLAUDE.md imports it for Claude Code.
 
-The direct ASR dependency is pinned; transitive dependencies are not locked yet. There is no
-DRM-removal workflow and no non-Apple inference backend in this prototype.
+The direct ASR dependency is pinned; transitive dependencies are not locked yet.
+There is no digital rights management (DRM) removal workflow and no non-Apple
+inference backend in this prototype.
 
-## Initial setup
+## Start with your assistant
 
-Run from the repository root:
+Open a new task or chat in this project root using your preferred agent client.
+The shared `AGENTS.md` contains the reading protocol; `CLAUDE.md` imports it for
+Claude Code. You can handle setup, listening updates, and reading questions in
+the conversation without running terminal commands yourself.
+
+Store your audiobook and its metadata under the ignored `audiobooks/` directory,
+or give the assistant another local path. Then tell it the file, the exact track
+title from your player, and your elapsed and remaining time. For example:
+
+> Help me set up heard-so-far for my audiobook at `audiobooks/book.m4b`.
+> This is my first read. I'm in “Chapter Two,” with 12:34 elapsed and 23:45
+> remaining. Save that position, then summarize what I've heard of this chapter
+> using only the local audiobook transcription.
+
+The assistant uses the local helpers to set up dependencies and the speech model
+if needed, validate your position, save it, and transcribe the permitted section.
+Initial dependency installation and the model download need network access; the
+model weights are about 1.6 GB. Your agent client may require permission for setup
+or local GPU access. Subsequent transcription uses the cached model offline.
+
+Elapsed plus remaining time identifies a track when titles repeat. If the match
+is still ambiguous, the assistant will ask for the track number or occurrence.
+There is no default book or listening position in a fresh clone.
+
+### Keep listening and asking
+
+Tell the assistant when your position changes, then ask your question:
+
+> I'm now at 20:00 elapsed with 16:19 remaining in “Chapter Two.” Update my
+> position and recap what happened since my last question.
+
+If you haven't advanced, just ask a question; the assistant uses your saved
+position until you explicitly update it. It generates fresh transcripts by
+default and checks the evidence before answering. Outside book sources are used
+only if you explicitly opt in as described below.
+
+Use a chat per chapter or listening session, keeping related follow-ups together.
+The assistant keeps a private journal of local-only questions and answers so a
+new chat can pick up useful context. You do not need to manage it yourself.
+
+If something was misheard, give the correction in the conversation:
+
+> At about 08:15, the narrator says “this here's about,” not “this year's about.”
+> Please use that correction for this passage.
+
+The assistant should save your correction for that book and passage and apply it
+when answering relevant questions. It should keep uncertain wording or spelling
+explicit rather than silently guessing.
+
+To change books, provide the new audio path and position. The workspace maintains
+one active book at a time; corrections stay with their book. Transcription detects
+language automatically, or you can tell the assistant which language to use.
+
+## Optional: cross-reference a source you choose
+
+Local-only reading is the default. If you want a wiki or other reference alongside
+the audiobook, explicitly authorize a specific page for your question:
+
+> For this question, compare the local transcript with this chapter-summary page:
+> [paste the page address]. It covers only Chapter Two, which I've finished.
+> Use only that page, don't follow links, and keep the answer within Chapter Two.
+
+Choose a page limited to material you've heard, or paste a bounded excerpt.
+Whole-book pages, navigation panels, and character biographies can contain
+spoilers. A page address or section anchor alone does not establish a safe
+boundary; if the scope is unclear, the assistant should ask for an excerpt
+instead of opening it to find out.
+
+The assistant should distinguish the page's claims from the audiobook and cite
+the page when using it. This opt-in does not authorize a general web search or
+change your saved listening position. Your agent client must permit access to
+the page; the project does not automatically change its permissions.
+
+Web-assisted answers are excluded from the local-only journal. Start a fresh
+chat when returning to local-only reading, so the outside reference is no longer
+part of the conversation's context. See the [source policy](spec/external-sources.md)
+for the full protocol and its limits.
+
+## Alternative: use the commands yourself
+
+These are the same helpers the assistant uses. Run them from the repository root
+if you prefer to manage setup and progress directly:
 
 ```sh
 make setup
 make download-model
 make doctor
-```
 
-The first two steps need network access. `download-model` fetches about 1.6 GB of
-speech model weights, not book content. Reading-time transcription uses the cache
-with `HF_HUB_OFFLINE=1`. The answering model is supplied by your agent client.
-With a hosted model, permitted transcript excerpts enter that provider's model
-context; local transcription does not make the entire conversation offline.
-
-Store your audiobook and its metadata under the ignored `audiobooks/` directory,
-or use another local path. Explicitly supply the source when setting your first
-position; there is no default book:
-
-```sh
 make progress TITLE='Your current track title' ELAPSED=12:34 REMAINING=23:45 AUDIO='audiobooks/book.m4b'
 make position
 ```
 
-Elapsed plus remaining time identifies a track when titles repeat. If that is
-still ambiguous, add the one-based `TRACK=N` reported by your player. No progress
-is included in a clone; it must be explicitly established before a reading query.
-Updates are validated against the embedded audio markers and saved locally.
-Later updates retain the saved audio path unless you explicitly supply `AUDIO`.
+`make progress` validates and saves your position; `make position` displays the
+saved position and tracks already begun. `AUDIO` is required on first setup.
+Later updates retain that path unless you provide a new one. If a repeated title
+and duration are still ambiguous, add `TRACK=N`, the track index counting from
+one. Add `SPEECH_LANGUAGE=es`, for example, to specify Spanish instead of automatic
+detection; that choice is retained for the same source.
 
-Changing books requires setting a new `AUDIO` and listening position; no edits to
-`AGENTS.md` or Python code are needed. The workspace maintains one active book at
-a time. Corrections are specific to the source and passage they identify; do not
-transfer them between books. The script assumes chapter order follows audio order.
-
-Transcription detects language automatically. Add `SPEECH_LANGUAGE=es`, for example, to
-the progress command to specify it. Later updates retain that choice for the same
-source; changing sources resets it unless specified again. Recognition quality
-depends on the language and recording. Recordings without embedded chapter markers
-and multi-file books are not yet supported by the navigation workflow.
-
-## Ask a reading question
-
-Start a **new task in this project root**. The shared `AGENTS.md` directs it to
-validate progress, transcribe a bounded section, read the evidence, and answer
-without outside book sources. For example:
-
-> Use the project's reading rules and saved progress. Summarize the opening
-> section using only its local audiobook transcription.
-
-Fresh transcripts are the default. For manual use:
+To transcribe manually, `FIRST` and `LAST` are the **inclusive track indexes in
+the audio file, counting from one**. They refer to the `track` values shown by
+`make position`, not chapter numbers printed in a title. Tracks with duplicate
+titles still have distinct indexes. For example:
 
 ```sh
+# Transcribe tracks 1 and 2 in full.
 make transcribe FIRST=1 LAST=2
+# Transcribe only track 3, ending 12 minutes and 34 seconds into that track.
 make transcribe FIRST=3 LAST=3 THROUGH=12:34
 ```
 
-These are illustrative values; first confirm your own permitted tracks with
-`make position`. `THROUGH` is relative to the last
-track. Requests beyond progress fail; an unfinished track requires an explicit
-partial endpoint. A five-second buffer is kept before the saved listening point.
+These are illustrative values; choose indexes and times within your saved
+progress. `THROUGH` is an elapsed time within `LAST`, in `MM:SS` or `HH:MM:SS`, not
+an absolute position in the whole audiobook. Requests beyond progress fail; an
+unfinished track requires an explicit partial endpoint. A five-second buffer is
+kept before the saved listening point. Reading-time model loading uses
+`HF_HUB_OFFLINE=1` so it cannot fetch missing weights.
 
-Outputs go to a new `companion/transcripts/query_*/` directory. The manifest
-records the source fingerprint and extraction interval. Raw chunks, a readable
-transcript, and overlapping-boundary comparisons are retained. The ten-minute
-chunks receive 20 seconds of context at internal breaks, within the requested
-section. Word timestamps and overlap selection still require judgment.
+## Privacy and practical limits
 
-Use `transcribe_section.py` for reading queries. The early pilot entry point has
-been retired so there is only one supported transcription path. User corrections
-belong in the ignored `companion/user_corrections.json` file, not in tracked book
-notes or a purported canonical character glossary.
+Audio transcription runs locally. If your assistant uses a hosted model, the
+text it reads enters that provider's model context. Local-source answers do not
+mean that the entire conversation happens offline.
 
-### Query continuity
+Purchased audio, transcripts, listening progress, corrections, and the query
+journal are excluded from Git by the project's ignore rules. Keep book files in
+`audiobooks/` or another ignored location, and avoid sharing book content in
+public issues or chat exports.
 
-Use a task per chapter or listening session, keeping related follow-ups together.
-`AGENTS.md` instructs the agent to save each transcript-grounded question and
-prepared answer automatically in the ignored `companion/journal/`, along with
-progress and source intervals. You do not need to maintain it manually. This is
-an agent instruction, not a guaranteed post-response hook; interrupted tasks may
-leave a prepared answer that was never delivered.
+The assistant can mishear speech, invent details, or mishandle a spoiler boundary.
+Replay anchors and your corrections help you check its answers. The project
+supports one audio file with embedded chapter markers; chapter order must follow
+audio order. Recordings without markers and multi-file books are not supported.
 
-Future tasks can inspect a few eligible journal entries to locate passages,
-then verify claims against transcripts. Archived answers are not source evidence.
-The helper checks source identity and time limits before opening an entry's body.
-It requires complete transcript chunks and final outputs before recording new
-evidence. Archived progress titles are never returned with an earlier answer.
-Journals survive transcript cleanup; references retain extraction metadata so
-deleted evidence can be regenerated. Moving or modifying an audio file starts a
-separate journal because identity uses its path, size, and modification time.
-Keep book notes out of auto-loaded agent memory; only the journal checks whether
-an entry fits the current question's scope before presenting its prose.
+For stricter local-only tool settings, see [the configuration notes](companion/LOCAL_ONLY.md).
+They explain the optional Codex template and what must be configured separately
+in other agent clients.
 
-## Local-source controls
+## Clearing generated files
 
-`AGENTS.md` forbids web searches, outside book sources, and unsupported literary
-embellishment. `companion/local-only.config.toml` provides project defaults for
-disabled web search and disabled sandbox command networking. To use those
-defaults, copy it to `.codex/config.toml` in a trusted project, without overwriting
-an existing configuration you need. That machine-local directory is ignored.
-This template is specific to Codex. Other clients need their own network and tool
-permissions; importing the reading instructions does not apply Codex settings.
+Ask the assistant to clear generated transcripts and audio samples, or run
+`make clean`. Your audiobook, listening position, corrections, journal, and
+cached speech model are kept. The assistant can transcribe again when needed.
 
-Read [the enforcement notes](companion/LOCAL_ONLY.md) for limits: browser and
-connector access are separate, the same-workspace agent can access raw files,
-and instructions cannot remove an LLM's prior knowledge. GPU execution may need
-separate permission in a sandboxed Codex session. These defaults are not a
-verified, complete network isolation policy.
+## Development
 
-## Testing and cleanup
-
-```sh
-make test
-make check-public
-make clean-transcripts
-make clean-audio
-make clean
-```
-
-Tests use synthetic chapter data and no model download. Cleanup removes only
-derived files in the named directories. `clean` preserves the purchased audio,
-saved progress, user corrections, query journals, virtual environment, and cached model. Cleanup
-and normal transcription share a lock to avoid deleting an active run's files.
-
-`make clean-cache` separately deletes the model and dependency cache. Use it only
-when you intend to download the model again before the next reading query.
-
-`make check` runs both tests and the public-file check. On macOS or Linux, use
-`make check PYTHON=python3` without a virtual environment or ASR dependencies.
-GitHub CI uses that lightweight path. See [CONTRIBUTING.md](CONTRIBUTING.md) for
-test expectations and review steps; CI does not test GPU inference or answer quality.
-
-## Version-control boundaries
-
-`.gitignore` excludes source audio, the `audiobooks/` directory and metadata,
-generated audio/text, model caches, virtual environments, personal progress and
-corrections, query journals, and local Codex config. If you store publisher metadata or other
-book content elsewhere, add that location to the ignore rules before staging.
-Do not force-add ignored material. Review `git status --short` and any staged diff
-before a future commit. `make check-public` flags tracked or addable paths outside
-the reviewed public inventory, including private files accidentally force-added
-to Git. It does not replace reviewing the contents of permitted source files.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for checks and contribution guidance,
+[spec/](spec/README.md) for the project's behavioral contracts, and
+[the implementation guide](companion/README.md) for the helper scripts.
 
 ## License
 
