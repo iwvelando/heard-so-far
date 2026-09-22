@@ -1,0 +1,6 @@
+# Project defaults for new reading tasks. See LOCAL_ONLY.md for limitations.
+web_search = "disabled"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false

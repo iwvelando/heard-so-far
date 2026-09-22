@@ -1,0 +1,30 @@
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+# Purchased audio, cover art, and the publisher's sidecar metadata.
+audiobooks/
+*.metadata.json
+*.m4b
+*.aax
+*.aaxc
+*.mp3
+*.m4a
+*.wav
+*.flac
+# Generated book text/audio and personal listening state.
+companion/transcripts/
+companion/audio/
+companion/progress.json
+companion/progress.tmp
+companion/user_corrections.json
+companion/journal/
+# Machine-local configuration; publish only the reviewed template.
+.codex/
+.claude/
+CLAUDE.local.md
+.companion.lock
