@@ -8,6 +8,8 @@ contracts for listening boundaries, evidence, journaling, and private data.
 [The external-source policy](spec/external-sources.md) defines the explicit opt-in
 and separation from local-only reading. Update the relevant contracts, agent
 instructions, and regression tests together when behavior changes.
+[The visualization contract](spec/visualizations.md) covers theme choice,
+evidence, snapshot semantics, and review of diagrams.
 
 Keep README.md focused on end-user instructions and expectations. Put operational
 agent steps in AGENTS.md, contractual behavior in spec/, and code navigation in

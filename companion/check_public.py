@@ -18,6 +18,7 @@ README.md
 assets/heard-so-far.svg
 spec/README.md
 spec/external-sources.md
+spec/visualizations.md
 companion/LOCAL_ONLY.md
 companion/README.md
 companion/check_public.py

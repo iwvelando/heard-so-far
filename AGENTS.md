@@ -155,6 +155,38 @@ build or maintain a transcript index.
   remove unsupported adjectives and generalizations. Prefer a shorter supported
   answer to a fluent but embellished one. Do not claim guaranteed spoiler safety.
 
+## Family trees and relationship diagrams
+
+For visualization requests, follow [spec/visualizations.md](spec/visualizations.md).
+Apply the same source, listening, and question-scope limits as for prose answers.
+
+- Before rendering, ask whether the user prefers a high-contrast light or dark
+  theme, unless they have already chosen one in this conversation or explicitly
+  delegated the choice. Continue permitted evidence work while waiting. Do not
+  infer a preference from the app's appearance or silently choose if unanswered.
+- State the snapshot: by default, show what is known through the requested reading
+  endpoint. Distinguish that from status at a particular story moment. Label
+  narrator disclosures of later outcomes separately; never turn them into events
+  already completed in the scene. Clarify if the intended snapshot is ambiguous
+  and would materially change the diagram.
+- Read the relevant permitted transcripts and build a compact evidence table
+  before drawing. Support relationships and status labels individually, with
+  attribution, uncertainty, and approximate replay anchors. A supplied summary
+  or diagram is a locator, not a replacement for transcript evidence.
+- Keep family trees and social relationships in separate views when requested.
+  Split crowded maps, shorten labels, and put lengthy qualifications in numbered
+  evidence notes. Explain edge direction and style; use labels as well as color.
+- Set the theme explicitly and inspect the rendered result for contrast, clipping,
+  overlap, and readability. Check lines, arrowheads, and edge labels as well as
+  nodes. If the chat renderer cannot honor the chosen theme, provide a locally
+  rendered Scalable Vector Graphics (SVG) file or another suitable local format.
+  If rendering cannot be verified, say so rather than claiming a visual check.
+- Keep exported book diagrams, editable sources, and evidence notes under the
+  ignored `companion/visualizations/`, never in public `assets/`. Follow the
+  artifact scope and journal rules in the visualization spec before saving or
+  reopening them. Theme or layout changes alone do not require fresh transcription
+  if the source and evidence scope still validate.
+
 ## Automatic private query journal
 
 The agent maintains this local-only journal without asking the user to manage it.

@@ -53,6 +53,14 @@ negation, and speaker attribution require explicit uncertainty or further local
 inspection. A long sentence does not need terminal punctuation to contain a
 usable clause.
 
+## Visualizations
+
+[visualizations.md](visualizations.md) defines the on-demand diagram workflow:
+theme selection, snapshot semantics, evidence tables, rendering review, and
+private artifacts. Visual labels and relationships must obey the same evidence
+and listening limits as prose. This workflow does not require automatic
+post-processing of every transcript or a persistent character database.
+
 ## Query journal
 
 The journal supports continuity without making conversation history authoritative.

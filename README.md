@@ -80,6 +80,22 @@ To change books, provide the new audio path and position. The workspace maintain
 one active book at a time; corrections stay with their book. Transcription detects
 language automatically, or you can tell the assistant which language to use.
 
+### Family trees and relationship maps
+
+You can ask for diagrams when a cast or family history gets hard to follow:
+
+> Using only the audiobook through the end of Chapter Three, make a family tree
+> for Family A and Family B, plus a separate relationship map for the key
+> characters. Show what is known by that point, distinguish uncertain claims,
+> and include an evidence table with approximate replay anchors.
+
+The assistant should ask whether you prefer a high-contrast light or dark theme,
+unless you've already specified one. You can include your preference in the
+request. For a large cast, ask for smaller diagrams by family or group.
+
+If you want characters' status at a particular moment in the story, say so. That
+can differ from everything the narrator has disclosed by your listening point.
+
 ## Optional: cross-reference a source you choose
 
 Local-only reading is the default. If you want a wiki or other reference alongside
@@ -151,8 +167,8 @@ Audio transcription runs locally. If your assistant uses a hosted model, the
 text it reads enters that provider's model context. Local-source answers do not
 mean that the entire conversation happens offline.
 
-Purchased audio, transcripts, listening progress, corrections, and the query
-journal are excluded from Git by the project's ignore rules. Keep book files in
+Purchased audio, transcripts, saved book diagrams, listening progress, corrections,
+and the query journal are excluded from Git by the project's ignore rules. Keep book files in
 `audiobooks/` or another ignored location, and avoid sharing book content in
 public issues or chat exports.
 
@@ -168,8 +184,9 @@ in other agent clients.
 ## Clearing generated files
 
 Ask the assistant to clear generated transcripts and audio samples, or run
-`make clean`. Your audiobook, listening position, corrections, journal, and
-cached speech model are kept. The assistant can transcribe again when needed.
+`make clean`. Your audiobook, listening position, corrections, journal, saved
+diagrams, and cached speech model are kept. The assistant can transcribe again
+when needed.
 
 ## Development
 

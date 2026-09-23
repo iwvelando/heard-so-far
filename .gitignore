@@ -23,6 +23,7 @@ companion/progress.json
 companion/progress.tmp
 companion/user_corrections.json
 companion/journal/
+companion/visualizations/
 # Machine-local configuration; publish only the reviewed template.
 .codex/
 .claude/
