@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 from position import seconds, validate
 from locking import exclusive
-from transcript_io import validate_chunk
+from transcript_io import coverage_gaps, local_label, repeated_runs, validate_chunk, windows
 
 ROOT = Path(__file__).resolve().parents[1]
 os.environ["HF_HOME"] = str(ROOT / ".cache/huggingface")
@@ -67,6 +67,9 @@ def main():
         "first_track": args.first_track, "last_track": args.last_track,
         "section_start": section_start, "section_end": section_end,
         "core_seconds": 600, "context_seconds": 20,
+        "tracks": [{"track": number, "start": float(chapters[number - 1]["start_time"]),
+                    "end": min(float(chapters[number - 1]["end_time"]), section_end)}
+                   for number in range(args.first_track, args.last_track + 1)],
         "review_status": "Unverified ASR. Review overlaps, names, and suspicious passages.",
     }
     manifest_path = folder / "manifest.json"
@@ -75,13 +78,10 @@ def main():
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     import mlx_whisper
     begun = time.monotonic()
-    core_start = section_start
-    index = 0
-    lines, boundaries, previous_words = [], [], []
-    while core_start < section_end:
-        core_end = min(core_start + 600, section_end)
-        clip_start = max(section_start, core_start - 20)
-        clip_end = min(section_end, core_end + 20)
+    lines, spans, boundaries, previous_words = [], [], [], []
+    for index, window in enumerate(windows(manifest)):
+        core_start, core_end = window["core_start"], window["core_end"]
+        clip_start, clip_end = window["clip_start"], window["clip_end"]
         path = folder / f"chunk_{index:03}.json"
         if path.exists():
             chunk = json.loads(path.read_text())
@@ -113,23 +113,34 @@ def main():
                 if core_start <= (a + b) / 2 < core_end:
                     kept.append((a, b, word["word"]))
             if kept:
-                lines.append(f"[{clock(kept[0][0])}–{clock(kept[-1][1])}] " +
-                             "".join(w[2] for w in kept).strip())
+                spans.extend((a, b) for a, b, _ in kept)
+                lines.append((kept[0][0], kept[-1][1], "".join(w[2] for w in kept).strip()))
         if index:
             def nearby(ws):
                 return [w for w in ws if abs((w["start"] + w["end"]) / 2 - core_start) < 10]
             boundaries.append({"boundary": core_start, "left": nearby(previous_words),
                                "right": nearby(words)})
         previous_words = words
-        index += 1
-        core_start = core_end
-        print(json.dumps({"completed_chunk": index, "section_minutes_done": round((core_end-section_start)/60, 1),
+        print(json.dumps({"completed_chunk": index + 1, "section_minutes_done": round((core_end-section_start)/60, 1),
                           "wall_seconds": round(time.monotonic()-begun, 1)}), flush=True)
-    (folder / "transcript.txt").write_text(
-        "UNVERIFIED ASR. Timestamps are absolute positions in the M4B.\n" +
-        "Overlaps are selected by word midpoint; consult boundaries.json for disagreements.\n\n" +
-        "\n".join(lines) + "\n")
+    quality = {"suspected_gaps": coverage_gaps(spans, section_start, section_end),
+               "repeated_runs": repeated_runs(lines)}
+    for flags in quality.values():
+        for flag in flags:
+            flag["from"] = local_label(flag["start"], manifest["tracks"])
+    flagged = len(quality["suspected_gaps"]) + len(quality["repeated_runs"])
+    (folder / "quality.json").write_text(json.dumps(quality, indent=2) + "\n")
     (folder / "boundaries.json").write_text(json.dumps(boundaries, indent=2) + "\n")
+    (folder / "transcript.txt").write_text(
+        "UNVERIFIED ASR. Timestamps are absolute positions in the M4B, followed by track-local replay time.\n" +
+        "Overlaps are selected by word midpoint; consult boundaries.json for disagreements.\n" +
+        (f"QUALITY FLAGS: {flagged} suspected dropouts or repetition loops; see quality.json.\n"
+         if flagged else "") + "\n" +
+        "\n".join(f"[{clock(a)}–{clock(b)} · {local_label(a, manifest['tracks'])}] {text}"
+                   for a, b, text in lines) + "\n")
+    print(json.dumps({"quality_flags": [
+        {"kind": kind, "from": flag["from"], "seconds": round(flag["end"] - flag["start"], 1)}
+        for kind, flags in quality.items() for flag in flags]}))
     print(f"Saved {len(lines)} timestamped passages to {folder.relative_to(ROOT)}/transcript.txt")
 
 

@@ -10,9 +10,12 @@ Transcripts are produced by automatic speech recognition (ASR).
 - transcribe_section.py creates fresh, offline, bounded transcripts by default.
   Its --through option is relative to the last selected track. An explicit --name
   resumes compatible existing output; routine queries should omit it.
-- transcripts/<run>/manifest.json records the audio fingerprint and core interval.
-  chunk_*.json retains raw ASR, transcript.txt selects core words by timestamp
-  midpoint, and boundaries.json retains overlapping readings for inspection.
+- transcripts/<run>/manifest.json records the audio fingerprint, core interval,
+  and included tracks. Chunks restart at each track start. chunk_*.json retains
+  raw ASR, transcript.txt selects core words by timestamp midpoint and labels each
+  line with absolute and track-local time, boundaries.json retains overlapping
+  readings for inspection, and quality.json lists suspected dropouts and
+  repetition loops by time only.
 - user_corrections.json contains user-verified, passage-specific corrections.
   Preserve raw ASR and do not turn these into global substitutions.
 - journal.py records prepared reading answers from JavaScript Object Notation

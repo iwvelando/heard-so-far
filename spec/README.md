@@ -37,12 +37,18 @@ coverage of that section; a few matching snippets are insufficient.
 
 The transcription pipeline uses ten-minute core chunks with twenty seconds of
 context at internal boundaries, clipped to the permitted extraction interval.
-It retains raw chunks, a readable transcript, overlap comparisons, and a manifest
-containing source identity and extraction settings. Spoken-word timestamps are
+Chunks restart at each track start, and context never crosses a track start,
+because audio at track breaks can derail recognition for the rest of a chunk.
+It retains raw chunks, a readable transcript labeled with absolute and
+track-local times, overlap comparisons, a timing-only quality report of
+suspected dropouts and repetition loops, and a manifest containing source
+identity, extraction settings, and the included tracks. Manifests without a
+track list describe continuous chunking and remain valid for reuse checks. Spoken-word timestamps are
 approximate; first and last words alone cannot establish continuous coverage.
 
 Reused chunks must match the requested extraction envelope. Before accepting a
-run for journaling, all required chunks and final outputs must exist. A manifest
+run for journaling, all required chunks and final outputs, including the
+quality report for track-aware runs, must exist. A manifest
 alone is not a completed transcription. These checks establish structural
 coverage, not recognition accuracy or proof that an agent read the evidence.
 

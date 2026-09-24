@@ -82,8 +82,18 @@ build or maintain a transcript index.
   user's question. Do not infer them from documentation examples.
 - The script uses the cached MLX Whisper model offline, checks the cutoff before
   extraction, and uses 20 seconds of context on either side of internal breaks.
-  It prints the output location without printing the story. Read its manifest,
-  `transcript.txt`, and relevant `boundaries.json` entries before answering.
+  Chunks restart at every track start and their context never crosses one, so
+  a section spanning several same-named tracks can be transcribed in one run.
+  It prints the output location and timing-only quality flags without printing
+  the story. Read its manifest, `transcript.txt`, `quality.json`, and relevant
+  `boundaries.json` entries before answering.
+- `quality.json` lists suspected dropouts (at least 15 seconds without a
+  recognized word) and loops of identical consecutive lines. A flag is a reason
+  to inspect or retranscribe that interval, for example by transcribing the
+  affected track alone; it is not proof of error, and an unflagged run is not
+  proof of accuracy. Treat stray fragments in the final seconds of a track
+  with suspicion, and do not summarize across an unresolved dropout as if it
+  were complete.
 - Graphics processing unit (GPU) access may require an approved shell execution outside the default sandbox
   on sandboxed macOS environments. Keep model loading offline. A GPU error is not permission to
   upload audio, download packages, enable networking, or weaken project settings.
@@ -141,8 +151,9 @@ build or maintain a transcript index.
   Label your own interpretation and provide it only when useful to the request.
 - Every substantive claim must have a supporting passage. Give a few useful
   replay anchors for the answer's main points, using track title, occurrence,
-  and local MM:SS. Convert from absolute timestamps using the embedded track
-  start. Label timestamps approximate; never confuse a sample's zero with the
+  and local MM:SS. Each transcript line shows the absolute time followed by the
+  track number and track-local time; cite the track-local time. Label timestamps
+  approximate; never confuse a sample's zero with the
   beginning of its audiobook track. Keep an internal claim-to-passage check.
 - When the permitted evidence is insufficient, say "I can't establish that from
   this passage" or explain the precise ambiguity. Do not infer that the book
