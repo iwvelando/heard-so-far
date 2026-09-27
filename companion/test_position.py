@@ -1,9 +1,10 @@
 """Progress matching and extraction boundary regression tests; no ASR required."""
+
 import json
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -17,9 +18,12 @@ def chapter(title, start, end):
 
 class PositionTests(unittest.TestCase):
     def setUp(self):
-        self.chapters = [chapter("Opening", 0, 80), chapter("Repeated chapter", 80, 680),
-                         chapter("Repeated chapter", 680, 1580.25),
-                         chapter("UNREAD TITLE", 1580.25, 2000)]
+        self.chapters = [
+            chapter("Opening", 0, 80),
+            chapter("Repeated chapter", 80, 680),
+            chapter("Repeated chapter", 680, 1580.25),
+            chapter("UNREAD TITLE", 1580.25, 2000),
+        ]
         self.p = position.match(self.chapters, "Repeated", 480, 420, audio_file="audiobooks/example.m4b")
 
     def test_duplicate_title_resolved_by_duration(self):
@@ -31,8 +35,12 @@ class PositionTests(unittest.TestCase):
         self.chapters.append(chapter("Repeated chapter", 2000, 2900.25))
         with self.assertRaisesRegex(ValueError, "found 2"):
             position.match(self.chapters, "Repeated", 480, 420, audio_file="audiobooks/example.m4b")
-        self.assertEqual(position.match(self.chapters, "Repeated", 480, 420, 3,
-                                       audio_file="audiobooks/example.m4b")["track_index_1_based"], 3)
+        self.assertEqual(
+            position.match(self.chapters, "Repeated", 480, 420, 3, audio_file="audiobooks/example.m4b")[
+                "track_index_1_based"
+            ],
+            3,
+        )
 
     def test_exact_title_preferred_over_partial_match(self):
         cs = [chapter("Chapter 1", 0, 100), chapter("Chapter 10", 100, 200)]
@@ -42,9 +50,11 @@ class PositionTests(unittest.TestCase):
         self.assertEqual(p["track_index_1_based"], 2)
 
     def test_missing_progress_explains_setup(self):
-        with tempfile.TemporaryDirectory() as directory, \
-             patch.object(position, "PROGRESS", Path(directory) / "progress.json"), \
-             patch.object(sys, "argv", ["position", "show"]):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(position, "PROGRESS", Path(directory) / "progress.json"),
+            patch.object(sys, "argv", ["position", "show"]),
+        ):
             with self.assertRaisesRegex(SystemExit, "No saved listening progress"):
                 position.main()
 
@@ -54,9 +64,14 @@ class PositionTests(unittest.TestCase):
         self.assertEqual(len(rows), 3)
 
     def test_corrupted_progress_rejected(self):
-        for key, value in [("cutoff_audio_seconds", 999999), ("reported_remaining_seconds", -1),
-                           ("boundary_buffer_seconds", 0), ("embedded_track_start_seconds", 0),
-                           ("embedded_track_end_seconds", float("nan")), ("track_title", "wrong")]:
+        for key, value in [
+            ("cutoff_audio_seconds", 999999),
+            ("reported_remaining_seconds", -1),
+            ("boundary_buffer_seconds", 0),
+            ("embedded_track_start_seconds", 0),
+            ("embedded_track_end_seconds", float("nan")),
+            ("track_title", "wrong"),
+        ]:
             with self.subTest(key=key), self.assertRaises(ValueError):
                 position.validate(self.p | {key: value}, self.chapters)
 
@@ -95,8 +110,11 @@ class PositionTests(unittest.TestCase):
             initial = position.match(cs, "Example", 60, 40, audio_file="audiobooks/first.m4b")
             initial["language"] = "es"
             progress_path.write_text(json.dumps(initial))
-            with patch.object(position, "PROGRESS", progress_path), patch.object(position, "probe", return_value=cs), \
-                 patch("builtins.print"):
+            with (
+                patch.object(position, "PROGRESS", progress_path),
+                patch.object(position, "probe", return_value=cs),
+                patch("builtins.print"),
+            ):
                 argv = ["position", "set", "--title", "Example", "--elapsed", "01:00", "--remaining", "00:40"]
                 with patch.object(sys, "argv", argv):
                     position.main()
@@ -120,15 +138,21 @@ class ExtractionTests(unittest.TestCase):
     def run_until_manifest(self, extra):
         probe = type("Probe", (), {"stdout": json.dumps({"chapters": self.chapters})})()
         written = []
+
         def capture(path, text):
             written.append((path, text))
             raise StopBeforeASR()
+
         argv = ["transcribe_section", "--first-track", "2", "--last-track", "2", *extra]
-        with patch.object(sys, "argv", argv), patch.object(Path, "read_text", return_value=json.dumps(self.p)), \
-             patch.object(transcribe_section.subprocess, "run", return_value=probe), \
-             patch.object(Path, "mkdir"), patch.object(Path, "exists", return_value=False), \
-             patch.object(Path, "write_text", autospec=True, side_effect=capture), \
-             patch.object(Path, "stat", return_value=type("Stat", (), {"st_size": 100, "st_mtime_ns": 1})()):
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(Path, "read_text", return_value=json.dumps(self.p)),
+            patch.object(transcribe_section.subprocess, "run", return_value=probe),
+            patch.object(Path, "mkdir"),
+            patch.object(Path, "exists", return_value=False),
+            patch.object(Path, "write_text", autospec=True, side_effect=capture),
+            patch.object(Path, "stat", return_value=type("Stat", (), {"st_size": 100, "st_mtime_ns": 1})()),
+        ):
             try:
                 transcribe_section.main()
             except StopBeforeASR:

@@ -124,8 +124,9 @@ does not replace reviewing file contents.
 
 ## Verification
 
-`make check` runs boundary, transcript-coverage, journal, cleanup, and public-file
-checks using synthetic data. GitHub continuous integration (CI) runs those checks
+`make check` runs formatting and lint checks, then boundary, transcript-coverage,
+journal, cleanup, and public-file checks using synthetic data. CI also confirms
+that each lockfile matches its `.in` file. GitHub continuous integration (CI) runs those checks
 without a speech model. It does not validate graphics processing unit (GPU)
 inference, transcription quality, or agent compliance with prose instructions,
 so speech-recognition dependency updates require manual review on Apple silicon.

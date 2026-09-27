@@ -1,8 +1,9 @@
 """The speech model is fetched and loaded only at its pinned revision."""
-from pathlib import Path
+
 import sys
 import types
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -19,8 +20,11 @@ def fake_hub(return_value="/cache/snapshot"):
 class ModelTests(unittest.TestCase):
     def test_download_requests_pinned_revision(self):
         hub = fake_hub()
-        with patch.dict(sys.modules, {"huggingface_hub": hub}), patch.dict(download_model.os.environ, {}, clear=True), \
-             patch("builtins.print"):
+        with (
+            patch.dict(sys.modules, {"huggingface_hub": hub}),
+            patch.dict(download_model.os.environ, {}, clear=True),
+            patch("builtins.print"),
+        ):
             download_model.main()
         hub.snapshot_download.assert_called_once_with(model.MODEL, revision=model.REVISION)
 

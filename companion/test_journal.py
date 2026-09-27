@@ -1,8 +1,9 @@
 """Journal isolation and boundary tests using synthetic local data only."""
+
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import journal
@@ -19,16 +20,30 @@ class JournalTests(unittest.TestCase):
         self.source = {"path": str(self.root / "book.m4b"), "size": 42, "mtime_ns": 100}
         self.ctx = ({"cutoff_audio_seconds": 105}, self.source, "a" * 64, 100)
         self.manifest = self.root / "manifest.json"
-        self.manifest.write_text(json.dumps({"source_audio": "book.m4b",
-            "source_size": 42, "source_mtime_ns": 100,
-            "section_start": 10, "section_end": 50, "core_seconds": 600, "context_seconds": 20}))
-        (self.root / "chunk_000.json").write_text(json.dumps({"core_start": 10,
-            "core_end": 50, "clip_start": 10, "clip_end": 50, "result": {"segments": []}}))
+        self.manifest.write_text(
+            json.dumps(
+                {
+                    "source_audio": "book.m4b",
+                    "source_size": 42,
+                    "source_mtime_ns": 100,
+                    "section_start": 10,
+                    "section_end": 50,
+                    "core_seconds": 600,
+                    "context_seconds": 20,
+                }
+            )
+        )
+        (self.root / "chunk_000.json").write_text(
+            json.dumps({"core_start": 10, "core_end": 50, "clip_start": 10, "clip_end": 50, "result": {"segments": []}})
+        )
         (self.root / "transcript.txt").write_text("Synthetic evidence")
         (self.root / "boundaries.json").write_text("[]")
-        self.payload = {"question": "What happened?", "answer": "A prepared answer.",
-                        "scope": {"start": 10, "end": 50},
-                        "manifests": [str(self.manifest)]}
+        self.payload = {
+            "question": "What happened?",
+            "answer": "A prepared answer.",
+            "scope": {"start": 10, "end": 50},
+            "manifests": [str(self.manifest)],
+        }
 
     def test_record_retains_exact_text_and_evidence_after_transcript_deletion(self):
         metadata = journal.record(self.payload, self.ctx)

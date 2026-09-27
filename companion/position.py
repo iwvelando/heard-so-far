@@ -1,11 +1,12 @@
 """Resolve listening positions without displaying unread chapter titles."""
+
 import argparse
 import json
 import math
-from pathlib import Path
 import re
 import subprocess
 import unicodedata
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROGRESS = ROOT / "companion/progress.json"
@@ -32,7 +33,9 @@ def clock(value):
 def probe(audio):
     result = subprocess.run(
         ["ffprobe", "-v", "error", "-show_chapters", "-of", "json", str(audio)],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     )
     return json.loads(result.stdout)["chapters"]
 
@@ -48,24 +51,34 @@ def match(chapters, title, elapsed, remaining, track=None, *, audio_file):
     for i, c in enumerate(chapters):
         duration = float(c["end_time"]) - float(c["start_time"])
         candidate = normalize(c.get("tags", {}).get("title", ""))
-        if (normalize(title) in candidate
+        if (
+            normalize(title) in candidate
             and abs(duration - elapsed - remaining) <= 1
-            and elapsed <= duration + 1 and (track is None or track == i + 1)):
+            and elapsed <= duration + 1
+            and (track is None or track == i + 1)
+        ):
             (exact if candidate == normalize(title) else partial).append(i)
     # A complete title wins over titles that merely contain it ("Chapter 1" vs "Chapter 10").
     matches = exact or partial
     if len(matches) != 1:
-        raise ValueError(f"Expected one title/duration match; found {len(matches)}. Clarify the title or one-based track number.")
+        raise ValueError(
+            f"Expected one title/duration match; found {len(matches)}. Clarify the title or one-based track number."
+        )
     i = matches[0]
     c = chapters[i]
     title = c["tags"]["title"]
     start, end = float(c["start_time"]), float(c["end_time"])
     return {
-        "audio_file": audio_file, "track_index_1_based": i + 1, "track_title": title,
-        "title_occurrence_1_based": sum(x.get("tags", {}).get("title") == title for x in chapters[:i+1]),
-        "reported_elapsed_seconds": elapsed, "reported_remaining_seconds": remaining,
-        "embedded_track_start_seconds": start, "embedded_track_end_seconds": end,
-        "cutoff_audio_seconds": min(start + elapsed, end), "boundary_buffer_seconds": 5,
+        "audio_file": audio_file,
+        "track_index_1_based": i + 1,
+        "track_title": title,
+        "title_occurrence_1_based": sum(x.get("tags", {}).get("title") == title for x in chapters[: i + 1]),
+        "reported_elapsed_seconds": elapsed,
+        "reported_remaining_seconds": remaining,
+        "embedded_track_start_seconds": start,
+        "embedded_track_end_seconds": end,
+        "cutoff_audio_seconds": min(start + elapsed, end),
+        "boundary_buffer_seconds": 5,
         "source": "Explicit user progress update; matched title plus elapsed + remaining to embedded audio chapter duration.",
     }
 
@@ -74,8 +87,10 @@ def load_progress():
     try:
         return json.loads(PROGRESS.read_text())
     except FileNotFoundError:
-        raise SystemExit("No saved listening progress. Set it with make progress TITLE=... ELAPSED=MM:SS "
-                         "REMAINING=MM:SS AUDIO=path (or position.py set ... --audio PATH).") from None
+        raise SystemExit(
+            "No saved listening progress. Set it with make progress TITLE=... ELAPSED=MM:SS "
+            "REMAINING=MM:SS AUDIO=path (or position.py set ... --audio PATH)."
+        ) from None
 
 
 def resolve_audio(explicit, saved):
@@ -92,17 +107,27 @@ def validate(p, chapters):
     c = chapters[i]
     start, end = float(c["start_time"]), float(c["end_time"])
     elapsed, remaining = p["reported_elapsed_seconds"], p["reported_remaining_seconds"]
-    nums = [start, end, elapsed, remaining, p["cutoff_audio_seconds"], p["boundary_buffer_seconds"],
-            p["embedded_track_start_seconds"], p["embedded_track_end_seconds"]]
+    nums = [
+        start,
+        end,
+        elapsed,
+        remaining,
+        p["cutoff_audio_seconds"],
+        p["boundary_buffer_seconds"],
+        p["embedded_track_start_seconds"],
+        p["embedded_track_end_seconds"],
+    ]
     if not all(math.isfinite(n) for n in nums) or min(elapsed, remaining) < 0:
         raise ValueError("Invalid progress values")
-    if (c.get("tags", {}).get("title") != p["track_title"]
-        or abs(start - p["embedded_track_start_seconds"]) > .01
-        or abs(end - p["embedded_track_end_seconds"]) > .01
+    if (
+        c.get("tags", {}).get("title") != p["track_title"]
+        or abs(start - p["embedded_track_start_seconds"]) > 0.01
+        or abs(end - p["embedded_track_end_seconds"]) > 0.01
         or abs((end - start) - (elapsed + remaining)) > 1
         or elapsed > end - start + 1
-        or abs(min(start + elapsed, end) - p["cutoff_audio_seconds"]) > .01
-        or p["boundary_buffer_seconds"] < 5):
+        or abs(min(start + elapsed, end) - p["cutoff_audio_seconds"]) > 0.01
+        or p["boundary_buffer_seconds"] < 5
+    ):
         raise ValueError("Saved progress does not match the audiobook; resolve it before reading")
     return max(0, p["cutoff_audio_seconds"] - p["boundary_buffer_seconds"])
 
@@ -116,9 +141,17 @@ def visible_tracks(chapters, cutoff):
             break
         title = c.get("tags", {}).get("title", "Untitled")
         counts[title] = counts.get(title, 0) + 1
-        rows.append({"track": i + 1, "title": title, "occurrence": counts[title],
-                     "duration": clock(end-start), "start_audio_seconds": start,
-                     "end_audio_seconds": end, "completed": end <= cutoff})
+        rows.append(
+            {
+                "track": i + 1,
+                "title": title,
+                "occurrence": counts[title],
+                "duration": clock(end - start),
+                "start_audio_seconds": start,
+                "end_audio_seconds": end,
+                "completed": end <= cutoff,
+            }
+        )
     return rows
 
 
@@ -131,7 +164,9 @@ def main():
     update.add_argument("--elapsed", required=True, type=seconds)
     update.add_argument("--remaining", required=True, type=seconds)
     update.add_argument("--track", type=int)
-    update.add_argument("--audio", help="Local audiobook path; required on first setup, then defaults to the saved source")
+    update.add_argument(
+        "--audio", help="Local audiobook path; required on first setup, then defaults to the saved source"
+    )
     update.add_argument("--language", help="Optional speech-language code; otherwise detect the language automatically")
     args = parser.parse_args()
     if args.command == "set":
@@ -142,7 +177,9 @@ def main():
             parser.error(str(error))
         chapters = probe(ROOT / audio_file)
         p = match(chapters, args.title, args.elapsed, args.remaining, args.track, audio_file=audio_file)
-        p["language"] = args.language or ((saved or {}).get("language") if (saved or {}).get("audio_file") == audio_file else None)
+        p["language"] = args.language or (
+            (saved or {}).get("language") if (saved or {}).get("audio_file") == audio_file else None
+        )
         validate(p, chapters)
         # Invoke 'set' only for an explicit user update; never infer progress from a query.
         temporary = PROGRESS.with_suffix(".tmp")
@@ -152,8 +189,16 @@ def main():
         p = load_progress()
         chapters = probe(ROOT / p["audio_file"])
     safe_end = validate(p, chapters)
-    print(json.dumps({"progress": p, "safe_audio_end_seconds": safe_end,
-                      "begun_tracks": visible_tracks(chapters, p["cutoff_audio_seconds"])}, indent=2))
+    print(
+        json.dumps(
+            {
+                "progress": p,
+                "safe_audio_end_seconds": safe_end,
+                "begun_tracks": visible_tracks(chapters, p["cutoff_audio_seconds"]),
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

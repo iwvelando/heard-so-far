@@ -24,4 +24,14 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python }}
+      - run: python -m pip install --require-hashes -r companion/requirements-dev.txt
       - run: make check PYTHON=python
+      # Lockfiles must match their .in files. Resolution doesn't depend on the runner's
+      # Python, so one leg is enough. uv is pinned: its output format can change.
+      - if: matrix.python == '3.14'
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: '0.11.5'
+          enable-cache: false
+      - if: matrix.python == '3.14'
+        run: make lock-check

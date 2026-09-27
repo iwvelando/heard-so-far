@@ -1,8 +1,11 @@
 # Version updates. GitHub Actions patch and minor updates auto-merge once `Check`
-# passes (workflows/dependabot-merge.yml). Majors are never merged automatically.
-# Python updates are never auto-merged: CI runs only standard-library tests and
-# cannot exercise mlx-whisper, which needs Apple silicon. Review those by hand
-# after `make setup && make doctor` and a short transcription on a Mac.
+# passes (workflows/dependabot-merge.yml). Majors are never merged automatically:
+# they need a review, then a manual merge (by a person, or by an agent once `Check`
+# has passed).
+# Python updates are never auto-merged: CI cannot exercise mlx-whisper, which needs
+# Apple silicon. Before merging one (person or agent), run `make setup`, `make doctor`,
+# and a short transcription on a Mac. `make lock-check` in CI fails if a lockfile no
+# longer matches its .in file; regenerate it with `make lock` on the PR branch.
 # Security updates are on in the repo settings and follow the same merge rules.
 version: 2
 updates:

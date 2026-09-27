@@ -1,15 +1,16 @@
 """Verify cleanup is restricted to derived data and arguments remain literal."""
-from pathlib import Path
-from contextlib import redirect_stdout
+
 import io
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import tasks
 import locking
+import tasks
 
 
 class HelpersTests(unittest.TestCase):
@@ -26,8 +27,12 @@ class HelpersTests(unittest.TestCase):
             journal = root / "companion/journal/book/entry.json"
             journal.parent.mkdir(parents=True)
             journal.write_text("private journal")
-            with patch.object(tasks, "ROOT", root), patch.object(locking, "ROOT", root), \
-                 patch.object(sys, "argv", ["tasks", "clean-transcripts"]), redirect_stdout(io.StringIO()):
+            with (
+                patch.object(tasks, "ROOT", root),
+                patch.object(locking, "ROOT", root),
+                patch.object(sys, "argv", ["tasks", "clean-transcripts"]),
+                redirect_stdout(io.StringIO()),
+            ):
                 tasks.main()
             self.assertFalse(transcript.parent.exists())
             self.assertEqual(audio.read_bytes(), b"source")
@@ -54,8 +59,11 @@ class HelpersTests(unittest.TestCase):
 
     def test_titles_are_passed_as_literal_arguments(self):
         title = 'A "quoted" title with apostrophe\' and $()'
-        with patch.dict(tasks.os.environ, {"TITLE": title, "ELAPSED": "01:00", "REMAINING": "02:00"}, clear=True), \
-             patch.object(sys, "argv", ["tasks", "progress"]), patch.object(tasks.subprocess, "run") as run:
+        with (
+            patch.dict(tasks.os.environ, {"TITLE": title, "ELAPSED": "01:00", "REMAINING": "02:00"}, clear=True),
+            patch.object(sys, "argv", ["tasks", "progress"]),
+            patch.object(tasks.subprocess, "run") as run,
+        ):
             tasks.main()
         command = run.call_args.args[0]
         self.assertEqual(command[command.index("--title") + 1], title)

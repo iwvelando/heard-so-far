@@ -40,6 +40,7 @@ current question/progress boundaries before reading its story text.
 Generated transcripts are unverified ASR, not canonical editions. Do not trust a
 prior summary simply because it was generated or approved in another conversation.
 
-The direct ASR dependency is pinned in requirements.txt and the model weights are
-pinned in model.py; transitive dependencies are not locked. Optional external references are governed by
+The ASR dependency and everything it installs are pinned with hashes in
+requirements.txt, compiled from requirements.in by `make lock`; the model weights
+are pinned in model.py. Optional external references are governed by
 [the source policy](../spec/external-sources.md), not a built-in web integration.

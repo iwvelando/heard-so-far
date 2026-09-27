@@ -1,11 +1,12 @@
 """Small Makefile helpers. Arguments travel through env, not shell interpolation."""
+
 import argparse
 import os
-from pathlib import Path
 import platform
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from locking import exclusive
 from model import REVISION, snapshot_dir
@@ -31,18 +32,35 @@ def clean(folder):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["progress", "transcribe", "doctor", "clean-transcripts", "clean-audio", "clean-cache"])
+    parser.add_argument(
+        "command", choices=["progress", "transcribe", "doctor", "clean-transcripts", "clean-audio", "clean-cache"]
+    )
     args = parser.parse_args()
     if args.command == "progress":
-        cmd = [sys.executable, str(ROOT / "companion/position.py"), "set",
-               "--title", required("TITLE"), "--elapsed", required("ELAPSED"), "--remaining", required("REMAINING")]
+        cmd = [
+            sys.executable,
+            str(ROOT / "companion/position.py"),
+            "set",
+            "--title",
+            required("TITLE"),
+            "--elapsed",
+            required("ELAPSED"),
+            "--remaining",
+            required("REMAINING"),
+        ]
         for env_name, flag in [("TRACK", "--track"), ("AUDIO", "--audio"), ("SPEECH_LANGUAGE", "--language")]:
             if os.environ.get(env_name):
                 cmd += [flag, os.environ[env_name]]
         subprocess.run(cmd, cwd=ROOT, check=True)
     elif args.command == "transcribe":
-        cmd = [sys.executable, str(ROOT / "companion/transcribe_section.py"),
-               "--first-track", required("FIRST"), "--last-track", required("LAST")]
+        cmd = [
+            sys.executable,
+            str(ROOT / "companion/transcribe_section.py"),
+            "--first-track",
+            required("FIRST"),
+            "--last-track",
+            required("LAST"),
+        ]
         if os.environ.get("THROUGH"):
             cmd += ["--through", os.environ["THROUGH"]]
         subprocess.run(cmd, cwd=ROOT, check=True)
@@ -54,8 +72,11 @@ def main():
         print(f"Progress saved: {(ROOT / 'companion/progress.json').exists()}")
         print(f"Pinned model snapshot {REVISION[:12]} present: {snapshot_dir(ROOT).exists()} (not an integrity check)")
     else:
-        folders = {"clean-transcripts": ROOT / "companion/transcripts",
-                   "clean-audio": ROOT / "companion/audio", "clean-cache": ROOT / ".cache"}
+        folders = {
+            "clean-transcripts": ROOT / "companion/transcripts",
+            "clean-audio": ROOT / "companion/audio",
+            "clean-cache": ROOT / ".cache",
+        }
         with exclusive():
             clean(folders[args.command])
 

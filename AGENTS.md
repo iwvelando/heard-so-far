@@ -262,3 +262,22 @@ here use ordinary shell tools and do not require a personal command wrapper or
 code-indexing service. Keep audiobook material and generated transcripts local and out
 of source control. Do not start other chats, agents, or automations for routine
 reading queries.
+
+## Development changes
+
+This section applies only to maintenance the user requests, never to reading.
+Follow [CONTRIBUTING.md](CONTRIBUTING.md). If codebase-memory-mcp is available,
+prefer its graph tools for code discovery and fall back to `rg` and direct
+reads; project scripts must run without either.
+
+- Run `make check` (after `make setup-dev`) and report the checks actually run;
+  do not imply that unrun checks passed. CI cannot exercise the speech model,
+  so dependency or transcription changes also need `make doctor` and a short
+  transcription on Apple silicon, or a plain statement that they were not run.
+- Changes reach `main` only through squash-merged pull requests whose `Check`
+  jobs passed. Never push to `main` or bypass the ruleset.
+- Change dependencies through `companion/requirements*.in` and `make lock`;
+  never hand-edit a lockfile. Add new public files to the reviewed inventory in
+  `companion/check_public.py` only after reviewing their contents.
+- Leave no machine-specific paths, credentials, or book material in source,
+  tests, or documentation.

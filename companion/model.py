@@ -11,8 +11,11 @@ def snapshot_dir(root):
 def local_path():
     """Return the cached pinned snapshot; callers decide whether the hub is offline."""
     from huggingface_hub import snapshot_download
+
     try:
         return snapshot_download(MODEL, revision=REVISION)
     except OSError as error:
-        raise SystemExit(f"Pinned speech model {MODEL}@{REVISION[:12]} is unavailable ({error}). "
-                         "Run make download-model during setup.")
+        raise SystemExit(
+            f"Pinned speech model {MODEL}@{REVISION[:12]} is unavailable ({error}). "
+            "Run make download-model during setup."
+        ) from error

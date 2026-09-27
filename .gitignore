@@ -2,6 +2,8 @@
 .cache/
 __pycache__/
 *.py[cod]
+.ruff_cache/
+*.log
 .DS_Store
 .env
 .env.*
@@ -29,3 +31,11 @@ companion/visualizations/
 .claude/
 CLAUDE.local.md
 .companion.lock
+.vscode/
+.idea/
+*.swp
+*~
+# Claude Code runtime state (also covered by .claude/ above; listed so narrowing that
+# entry cannot expose them).
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
