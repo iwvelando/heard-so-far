@@ -53,7 +53,15 @@ quality report for track-aware runs, must exist. A manifest
 alone is not a completed transcription. These checks establish structural
 coverage, not recognition accuracy or proof that an agent read the evidence.
 
-Corrections must be stored privately with their source and passage. They must
+Corrections must be stored privately with their source and passage. The file
+names one `source_audio`, which must match saved progress. Each entry requires a
+one-based track, that track's embedded title, a track-local start before its end,
+the raw ASR wording, the corrected wording, and an attribution; only an optional
+note is allowed besides these. Unknown fields, including free-text timing or
+references to other files, are rejected, as are passages outside their track or
+beyond the buffered listening limit. `corrections.py` validates the file and
+appends entries atomically; its messages identify entries by position without
+book text or unread titles. Corrections must
 remain attributed to the user and must not silently rewrite raw ASR, become
 global substitutions, or transfer between books. Uncertain names, dialect,
 negation, and speaker attribution require explicit uncertainty or further local

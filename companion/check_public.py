@@ -34,6 +34,7 @@ spec/visualizations.md
 companion/LOCAL_ONLY.md
 companion/README.md
 companion/check_public.py
+companion/corrections.py
 companion/download_model.py
 companion/journal.py
 companion/local-only.config.toml
@@ -45,6 +46,7 @@ companion/requirements-dev.txt
 companion/requirements.in
 companion/requirements.txt
 companion/tasks.py
+companion/test_corrections.py
 companion/test_dependabot.py
 companion/test_journal.py
 companion/test_model.py

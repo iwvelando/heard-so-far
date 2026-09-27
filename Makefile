@@ -4,7 +4,7 @@ UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_CACHE_DIR
 export TITLE ELAPSED REMAINING TRACK AUDIO SPEECH_LANGUAGE FIRST LAST THROUGH
 
-.PHONY: help setup setup-dev download-model doctor position progress transcribe test lint format lock lock-check check check-public clean clean-transcripts clean-audio clean-cache
+.PHONY: help setup setup-dev download-model doctor position progress corrections-check transcribe test lint format lock lock-check check check-public clean clean-transcripts clean-audio clean-cache
 
 help:
 	@printf '%s\n' \
@@ -15,6 +15,7 @@ help:
 	  'make position              Validate progress and list only begun tracks' \
 	  'make progress TITLE="..." ELAPSED=MM:SS REMAINING=MM:SS [AUDIO=path] [TRACK=N] [SPEECH_LANGUAGE=code]' \
 	  '  AUDIO is required on first setup; language detection is automatic unless specified.' \
+	  'make corrections-check     Validate saved corrections against the source and progress' \
 	  'make transcribe FIRST=N LAST=M [THROUGH=MM:SS]  Fresh offline transcription' \
 	  'make test                  Run boundary, journal, and cleanup tests; no model required' \
 	  'make lint                  Check formatting and lint rules (needs setup-dev)' \
@@ -47,6 +48,9 @@ position:
 
 progress:
 	"$(PYTHON)" companion/tasks.py progress
+
+corrections-check:
+	"$(PYTHON)" companion/corrections.py check
 
 transcribe:
 	"$(PYTHON)" companion/tasks.py transcribe

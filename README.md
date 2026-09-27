@@ -72,11 +72,13 @@ new chat can pick up useful context. You do not need to manage it yourself.
 
 If something was misheard, give the correction in the conversation:
 
-> At about 08:15, the narrator says “this here's about,” not “this year's about.”
-> Please use that correction for this passage.
+> In the chapter I'm listening to now, at about 08:15 to 08:20, the narrator says
+> “this here's about,” not “this year's about.” Please use that correction for this passage.
 
-The assistant should save your correction for that book and passage and apply it
-when answering relevant questions. It should keep uncertain wording or spelling
+Name the chapter or track and the approximate time. If either is missing, the
+assistant asks before saving, because a correction without a location cannot be
+checked or applied safely. It saves your correction for that book and passage and
+applies it when answering relevant questions. It should keep uncertain wording or spelling
 explicit rather than silently guessing.
 
 To change books, provide the new audio path and position. The workspace maintains
