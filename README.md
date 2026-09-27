@@ -21,7 +21,8 @@ configuration, not repository defaults.
   instructions, run local commands, and inspect files. AGENTS.md is the shared
   protocol; CLAUDE.md imports it for Claude Code.
 
-The direct ASR dependency is pinned; transitive dependencies are not locked yet.
+The direct ASR dependency and the model weight revision are pinned; transitive
+dependencies are not locked yet.
 There is no digital rights management (DRM) removal workflow and no non-Apple
 inference backend in this prototype.
 

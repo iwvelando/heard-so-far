@@ -17,8 +17,9 @@ without development history or migration narrative.
 - Only an explicit user update may advance listening progress or change books.
   A question or a character name must not be treated as evidence of advancement.
 - Resolve title plus elapsed and remaining time against embedded audio chapter
-  markers. Repeated titles remain distinct track entries. Missing or ambiguous
-  progress must be resolved before accessing story text.
+  markers. Repeated titles remain distinct track entries. A complete title match
+  takes precedence over titles that only contain the user's text. Missing or
+  ambiguous progress must be resolved before accessing story text.
 - The requested section can be narrower than the listening limit. A summary
   of an earlier chapter must not incorporate later material even if already heard.
 - Extraction must stay within the requested interval and end at least five
@@ -105,7 +106,8 @@ determine whether prose contains a spoiler, or certify answer quality.
 
 ## Local operation and publication
 
-Reading-time ASR loads cached model weights offline. Installing dependencies and
+Reading-time ASR loads cached model weights offline, at the pinned revision
+recorded in each transcript manifest. Installing dependencies and
 downloading a model are explicit setup operations. Neither a failed transcription
 nor optional reference-page access authorizes uploading audio or enabling general
 network access. Client-level restrictions and agent instructions are separate

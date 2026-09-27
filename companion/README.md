@@ -27,6 +27,8 @@ Transcripts are produced by automatic speech recognition (ASR).
 - transcript_io.py validates chunk timing and complete extraction coverage for
   journaling and checks resumed chunks before their words are processed. It does
   not certify the accuracy of ASR or generated answers.
+- model.py names the speech model and its pinned weight revision. Setup
+  downloads that revision; transcription loads it from the offline cache.
 - check_public.py checks the public file inventory before staging and in
   continuous integration (CI).
 - LOCAL_ONLY.md explains the instruction and runtime controls and their limits.
@@ -38,6 +40,6 @@ current question/progress boundaries before reading its story text.
 Generated transcripts are unverified ASR, not canonical editions. Do not trust a
 prior summary simply because it was generated or approved in another conversation.
 
-The direct ASR dependency is pinned in requirements.txt; transitive dependencies
-are not locked. Optional external references are governed by
+The direct ASR dependency is pinned in requirements.txt and the model weights are
+pinned in model.py; transitive dependencies are not locked. Optional external references are governed by
 [the source policy](../spec/external-sources.md), not a built-in web integration.

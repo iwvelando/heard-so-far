@@ -7,15 +7,15 @@ import subprocess
 import time
 from datetime import datetime, timezone
 
-from position import seconds, validate
+from position import load_progress, seconds, validate
 from locking import exclusive
+from model import MODEL, REVISION, local_path
 from transcript_io import coverage_gaps, local_label, repeated_runs, validate_chunk, windows
 
 ROOT = Path(__file__).resolve().parents[1]
 os.environ["HF_HOME"] = str(ROOT / ".cache/huggingface")
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
-MODEL = "mlx-community/whisper-large-v3-turbo"
 
 
 def clock(seconds):
@@ -34,7 +34,7 @@ def main():
         args.name = "query_" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S_%fZ")
     if not args.name.replace("_", "").replace("-", "").isalnum():
         raise ValueError("Use a simple output name")
-    progress = json.loads((ROOT / "companion/progress.json").read_text())
+    progress = load_progress()
     audio = ROOT / progress["audio_file"]
     probe = json.loads(subprocess.run(
         ["ffprobe", "-v", "error", "-show_chapters", "-of", "json", str(audio)],
@@ -62,7 +62,7 @@ def main():
     folder.mkdir(parents=True, exist_ok=True)
     manifest = {
         "source_audio": progress["audio_file"], "source_size": audio.stat().st_size,
-        "source_mtime_ns": audio.stat().st_mtime_ns, "model": MODEL,
+        "source_mtime_ns": audio.stat().st_mtime_ns, "model": MODEL, "model_revision": REVISION,
         "language": progress.get("language"),
         "first_track": args.first_track, "last_track": args.last_track,
         "section_start": section_start, "section_end": section_end,
@@ -77,6 +77,7 @@ def main():
         raise ValueError("Existing output belongs to a different transcription configuration")
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     import mlx_whisper
+    model_path = local_path()
     begun = time.monotonic()
     lines, spans, boundaries, previous_words = [], [], [], []
     for index, window in enumerate(windows(manifest)):
@@ -95,7 +96,7 @@ def main():
                 "-map", "0:a:0", "-vn", "-ar", "16000", "-ac", "1", str(clip),
             ], check=True)
             result = mlx_whisper.transcribe(
-                str(clip), path_or_hf_repo=MODEL, language=progress.get("language"), word_timestamps=True,
+                str(clip), path_or_hf_repo=model_path, language=progress.get("language"), word_timestamps=True,
                 verbose=None,
             )
             chunk = {"clip_start": clip_start, "clip_end": clip_end,

@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from locking import exclusive
+from model import REVISION, snapshot_dir
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -51,8 +52,7 @@ def main():
         for tool in ["ffmpeg", "ffprobe", "uv", "git"]:
             print(f"{tool}: {shutil.which(tool) or 'not found'}")
         print(f"Progress saved: {(ROOT / 'companion/progress.json').exists()}")
-        model = ROOT / ".cache/huggingface/hub/models--mlx-community--whisper-large-v3-turbo/snapshots"
-        print(f"Model snapshot directory present: {model.exists()} (not an integrity check)")
+        print(f"Pinned model snapshot {REVISION[:12]} present: {snapshot_dir(ROOT).exists()} (not an integrity check)")
     else:
         folders = {"clean-transcripts": ROOT / "companion/transcripts",
                    "clean-audio": ROOT / "companion/audio", "clean-cache": ROOT / ".cache"}

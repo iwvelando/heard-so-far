@@ -26,10 +26,12 @@ companion/download_model.py
 companion/journal.py
 companion/local-only.config.toml
 companion/locking.py
+companion/model.py
 companion/position.py
 companion/requirements.txt
 companion/tasks.py
 companion/test_journal.py
+companion/test_model.py
 companion/test_position.py
 companion/test_public.py
 companion/test_tasks.py

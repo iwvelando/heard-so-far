@@ -34,6 +34,20 @@ class PositionTests(unittest.TestCase):
         self.assertEqual(position.match(self.chapters, "Repeated", 480, 420, 3,
                                        audio_file="audiobooks/example.m4b")["track_index_1_based"], 3)
 
+    def test_exact_title_preferred_over_partial_match(self):
+        cs = [chapter("Chapter 1", 0, 100), chapter("Chapter 10", 100, 200)]
+        p = position.match(cs, "Chapter 1", 60, 40, audio_file="audiobooks/example.m4b")
+        self.assertEqual(p["track_index_1_based"], 1)
+        p = position.match(cs, "chapter 10", 60, 40, audio_file="audiobooks/example.m4b")
+        self.assertEqual(p["track_index_1_based"], 2)
+
+    def test_missing_progress_explains_setup(self):
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(position, "PROGRESS", Path(directory) / "progress.json"), \
+             patch.object(sys, "argv", ["position", "show"]):
+            with self.assertRaisesRegex(SystemExit, "No saved listening progress"):
+                position.main()
+
     def test_future_titles_not_shown(self):
         rows = position.visible_tracks(self.chapters, self.p["cutoff_audio_seconds"])
         self.assertNotIn("UNREAD TITLE", json.dumps(rows))
@@ -127,6 +141,7 @@ class ExtractionTests(unittest.TestCase):
     def test_partial_request_stops_before_progress(self):
         path, text = self.run_until_manifest(["--through", "02:30"])
         self.assertEqual(json.loads(text)["section_end"], 245)
+        self.assertEqual(json.loads(text)["model_revision"], transcribe_section.REVISION)
         self.assertTrue(path.parent.name.startswith("query_"))
 
     def test_requested_end_is_not_advanced(self):

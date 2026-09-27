@@ -44,13 +44,16 @@ def normalize(title):
 def match(chapters, title, elapsed, remaining, track=None, *, audio_file):
     if not normalize(title) or min(elapsed, remaining) < 0 or elapsed + remaining <= 0:
         raise ValueError("Provide a title and valid elapsed/remaining times")
-    matches = []
+    exact, partial = [], []
     for i, c in enumerate(chapters):
         duration = float(c["end_time"]) - float(c["start_time"])
-        if (normalize(title) in normalize(c.get("tags", {}).get("title", ""))
+        candidate = normalize(c.get("tags", {}).get("title", ""))
+        if (normalize(title) in candidate
             and abs(duration - elapsed - remaining) <= 1
             and elapsed <= duration + 1 and (track is None or track == i + 1)):
-            matches.append(i)
+            (exact if candidate == normalize(title) else partial).append(i)
+    # A complete title wins over titles that merely contain it ("Chapter 1" vs "Chapter 10").
+    matches = exact or partial
     if len(matches) != 1:
         raise ValueError(f"Expected one title/duration match; found {len(matches)}. Clarify the title or one-based track number.")
     i = matches[0]
@@ -65,6 +68,14 @@ def match(chapters, title, elapsed, remaining, track=None, *, audio_file):
         "cutoff_audio_seconds": min(start + elapsed, end), "boundary_buffer_seconds": 5,
         "source": "Explicit user progress update; matched title plus elapsed + remaining to embedded audio chapter duration.",
     }
+
+
+def load_progress():
+    try:
+        return json.loads(PROGRESS.read_text())
+    except FileNotFoundError:
+        raise SystemExit("No saved listening progress. Set it with make progress TITLE=... ELAPSED=MM:SS "
+                         "REMAINING=MM:SS AUDIO=path (or position.py set ... --audio PATH).") from None
 
 
 def resolve_audio(explicit, saved):
@@ -138,7 +149,7 @@ def main():
         temporary.write_text(json.dumps(p, indent=2) + "\n")
         temporary.replace(PROGRESS)
     else:
-        p = json.loads(PROGRESS.read_text())
+        p = load_progress()
         chapters = probe(ROOT / p["audio_file"])
     safe_end = validate(p, chapters)
     print(json.dumps({"progress": p, "safe_audio_end_seconds": safe_end,
