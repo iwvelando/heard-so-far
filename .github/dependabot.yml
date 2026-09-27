@@ -1,0 +1,30 @@
+# Version updates. GitHub Actions patch and minor updates auto-merge once `Check`
+# passes (workflows/dependabot-merge.yml). Majors are never merged automatically.
+# Python updates are never auto-merged: CI runs only standard-library tests and
+# cannot exercise mlx-whisper, which needs Apple silicon. Review those by hand
+# after `make setup && make doctor` and a short transcription on a Mac.
+# Security updates are on in the repo settings and follow the same merge rules.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Compromised releases are usually pulled within days. Security updates skip this.
+    cooldown:
+      default-days: 5
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: pip
+    directory: /companion
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 5
+    groups:
+      pip-minor-and-patch:
+        update-types: [minor, patch]
