@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement to the companion or its reading protocol.
+labels: [enhancement]
+body:
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: >
+            This request contains no audiobook text, transcripts, journal answers,
+            publisher metadata, or personal paths.
+          required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What would help
+      description: The reading situation or workflow this would improve.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Listening limits and sources
+      description: How the change should respect the listening limit and local-only evidence.

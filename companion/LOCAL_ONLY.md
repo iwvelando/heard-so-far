@@ -8,6 +8,16 @@ Users can explicitly opt into supplied reference pages under
 [the external-source policy](../spec/external-sources.md); this does not change
 the default configuration or grant tools additional permissions.
 
+To apply the Codex template, copy it into the ignored project config directory
+from the repository root:
+
+```sh
+mkdir -p .codex && cp companion/local-only.config.toml .codex/config.toml
+```
+
+Codex loads project-scoped config only for a project you have marked as trusted.
+Start a new task after copying it; a running task keeps its existing settings.
+
 The project config requests disabled web search and disabled outbound networking
 for workspace-sandbox commands. These are documented Codex settings, but effective
 permissions depend on the client, trust, and higher-priority policy. They do not

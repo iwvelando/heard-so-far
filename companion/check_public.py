@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 # explicit review when adding public files; ignored local data never belongs here.
 PUBLIC_FILES = set("""
 .gitignore
+.github/ISSUE_TEMPLATE/bug_report.yml
+.github/ISSUE_TEMPLATE/config.yml
+.github/ISSUE_TEMPLATE/feature_request.yml
 .github/workflows/check.yml
 AGENTS.md
 CLAUDE.md
@@ -15,6 +18,7 @@ CONTRIBUTING.md
 LICENSE
 Makefile
 README.md
+SECURITY.md
 assets/heard-so-far.svg
 spec/README.md
 spec/external-sources.md

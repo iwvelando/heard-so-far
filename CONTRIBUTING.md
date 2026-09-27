@@ -34,7 +34,9 @@ Add regression tests when changing progress limits, extraction coverage, journal
 eligibility, or cleanup. Use invented short passages and synthetic timestamps.
 Never include purchased audio, transcripts, journal answers, publisher metadata,
 personal paths, credentials, or private agent settings in tests, issues, or pull requests.
-Describe recognition problems with a synthetic example where possible.
+Describe recognition problems with a synthetic example where possible. The
+issue forms ask you to confirm this; report vulnerabilities privately as
+described in [SECURITY.md](SECURITY.md).
 
 ## Before a commit
 

@@ -15,6 +15,8 @@ configuration, not repository defaults.
 
 - macOS on Apple silicon with Metal access to its graphics processing unit (GPU).
 - Python 3.11 or newer, `uv`, `ffmpeg`/`ffprobe`, and `make` installed locally.
+  With [Homebrew](https://brew.sh), `brew install uv ffmpeg` provides the first
+  three; `xcode-select --install` provides `make` and Git.
 - A locally readable audiobook with embedded chapter markers. No audio, book
   text, model weights, or publisher metadata is distributed with this repository.
 - An agent powered by a large language model (LLM) that can read project
@@ -179,8 +181,8 @@ supports one audio file with embedded chapter markers; chapter order must follow
 audio order. Recordings without markers and multi-file books are not supported.
 
 For stricter local-only tool settings, see [the configuration notes](companion/LOCAL_ONLY.md).
-They explain the optional Codex template and what must be configured separately
-in other agent clients.
+They explain how to install the optional Codex template and what must be
+configured separately in other agent clients.
 
 ## Clearing generated files
 
@@ -192,6 +194,7 @@ when needed.
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for checks and contribution guidance,
+[SECURITY.md](SECURITY.md) for private vulnerability reports,
 [spec/](spec/README.md) for the project's behavioral contracts, and
 [the implementation guide](companion/README.md) for the helper scripts.
 

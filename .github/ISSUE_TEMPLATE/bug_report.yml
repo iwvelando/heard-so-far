@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a problem with setup, progress, transcription, journaling, or the reading protocol.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Issues are public. Describe the problem with synthetic examples: invented
+        titles, short made-up passages, and made-up timestamps.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: >
+            This issue contains no audiobook audio or text, transcripts, journal
+            answers, publisher metadata, personal paths, or credentials.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Synthetic reproduction
+      description: A command, test, or invented example that shows the problem.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Output of `make doctor`, plus your agent client if relevant.
+      render: text
