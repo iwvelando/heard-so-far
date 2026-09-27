@@ -114,11 +114,19 @@ build or maintain a transcript index.
   probabilities are not calibrated confidence. Prefer user-verified corrections
   in `companion/user_corrections.json`, if present, only for the source audiobook
   and particular passages they identify;
-  do not apply them as global substitutions.
+  do not apply them as global substitutions. Before relying on them, run
+  `.venv/bin/python companion/corrections.py check`; if it reports problems,
+  do not use the file until the user resolves them.
 - When the user supplies a correction, record it in the ignored
-  `companion/user_corrections.json` with the source audio, identified passage or
-  time interval, their wording, and its attribution to the user. Preserve existing
-  entries and raw ASR. Ask for the passage if ambiguous; do not invent its scope.
+  `companion/user_corrections.json` only through
+  `.venv/bin/python companion/corrections.py add`, supplying one JSON object on
+  standard input from a literal quoted heredoc: `track` (one-based), `track_title`,
+  track-local `start` and `end` (MM:SS), `asr`, `corrected`, `attribution`
+  (`"user"`), and an optional `note`. The helper ties the file to the saved
+  source, preserves existing entries, and rejects free-text timing, unknown
+  fields, and passages outside that track or beyond the listening limit. If the
+  user has not identified the track and interval, ask; never record an unlocated
+  correction or invent its scope. Preserve raw ASR.
   Do not copy corrections into tracked book notes or a character glossary, or
   treat external reference-page claims as user-verified audio corrections.
 - Preserve raw output. Do not silently standardize a name using outside knowledge.

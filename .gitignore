@@ -24,6 +24,7 @@ companion/audio/
 companion/progress.json
 companion/progress.tmp
 companion/user_corrections.json
+companion/user_corrections.tmp
 companion/journal/
 companion/visualizations/
 # Machine-local configuration; publish only the reviewed template.

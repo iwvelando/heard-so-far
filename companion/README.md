@@ -16,8 +16,12 @@ Transcripts are produced by automatic speech recognition (ASR).
   line with absolute and track-local time, boundaries.json retains overlapping
   readings for inspection, and quality.json lists suspected dropouts and
   repetition loops by time only.
-- user_corrections.json contains user-verified, passage-specific corrections.
-  Preserve raw ASR and do not turn these into global substitutions.
+- user_corrections.json contains user-verified, passage-specific corrections
+  for one source audiobook. Preserve raw ASR and do not turn these into global
+  substitutions.
+- corrections.py validates that file (`check`) and appends one correction from
+  JSON on standard input (`add`). Each entry needs a track, its title, and a
+  track-local interval within heard audio; unlocated entries are rejected.
 - journal.py records prepared reading answers from JavaScript Object Notation
   (JSON) on standard input. Its `list` and
   `read` commands require `--through` in absolute audio seconds and validate the
