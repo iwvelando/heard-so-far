@@ -19,15 +19,21 @@ Expand acronyms on first use in each document.
 ## Development checks
 
 The boundary, journal, and cleanup tests use only Python's standard library and
-synthetic data. On macOS or Linux, run them without installing MLX or any model:
+synthetic data. On macOS or Linux, run them without installing MLX or any model.
+`make check` also checks formatting and lint rules with ruff, installed from the
+hashed `companion/requirements-dev.txt`:
 
 ```sh
-make check PYTHON=python3
+make setup-dev
+make check
 ```
+
+`make format` applies ruff's formatting and safe fixes. The ruff configuration is
+in `ruff.toml`, so results don't depend on any user-level ruff settings.
 
 For actual transcription, follow README.md's Apple silicon setup. GitHub
 continuous integration (CI) runs
-the standard-library checks; it does not exercise Metal, model installation,
+these checks and `make lock-check`; it does not exercise Metal, model installation,
 recognition quality, or an agent's compliance with the reading protocol.
 
 Add regression tests when changing progress limits, extraction coverage, journal
@@ -44,9 +50,21 @@ Changes reach `main` only through pull requests that pass both `Check` jobs, and
 they are squash-merged. The pull request title and body become the commit message.
 
 Dependabot proposes GitHub Actions and Python updates weekly. Actions updates
-that change no major version merge automatically after `Check` passes. Python
-updates are always reviewed by hand, because CI cannot run mlx-whisper: on Apple
-silicon, run `make setup`, `make doctor`, and a short transcription before merging.
+that change no major version merge automatically after `Check` passes. Majors
+need a review, then a manual merge, by a person or by an agent once `Check` has
+passed. Python updates are always merged by hand, because CI cannot run
+mlx-whisper: on Apple silicon, run `make setup`, `make doctor`, and a short
+transcription before merging.
+
+## Dependencies
+
+Direct dependencies are listed in `companion/requirements.in` (runtime) and
+`companion/requirements-dev.in` (development tools). `make lock` compiles them
+into hashed lockfiles, and `make setup` and `make setup-dev` install only what
+those lockfiles pin. The runtime lock targets Apple silicon on macOS 14 or newer.
+Commit a lockfile together with its `.in` file; CI runs `make lock-check` to
+confirm they match. `make lock` keeps existing pins, so it changes only what an
+edited `.in` file requires.
 
 ## Before a commit
 

@@ -3,18 +3,19 @@
 This is an agent-invoked helper, not an automatic post-response hook. Records
 contain prepared answers, not proof that a response was delivered or is correct.
 """
+
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
 import math
-from pathlib import Path
 import re
 import sys
 import tempfile
 import uuid
+from datetime import UTC, datetime
+from pathlib import Path
 
-from position import ROOT, PROGRESS, probe, validate
+from position import PROGRESS, ROOT, probe, validate
 from transcript_io import validate_run
 
 
@@ -61,9 +62,11 @@ def record(payload, ctx):
     for name in paths:
         path = (ROOT / name).resolve()
         manifest = json.loads(path.read_text())
-        if ((ROOT / manifest["source_audio"]).resolve() != Path(source["path"])
+        if (
+            (ROOT / manifest["source_audio"]).resolve() != Path(source["path"])
             or manifest["source_size"] != source["size"]
-            or manifest["source_mtime_ns"] != source["mtime_ns"]):
+            or manifest["source_mtime_ns"] != source["mtime_ns"]
+        ):
             raise ValueError("Transcript manifest belongs to a different or changed source")
         span = interval({"start": manifest["section_start"], "end": manifest["section_end"]})
         if span["end"] > scope["end"]:
@@ -71,17 +74,25 @@ def record(payload, ctx):
         validate_run(path.parent, manifest)
         evidence.append({"manifest_path": str(path), "manifest": manifest})
     entry_id = uuid.uuid4().hex
-    metadata = {"version": 1, "id": entry_id, "source_id": source_id,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "scope": scope,
-                "evidence_end": max(item["manifest"]["section_end"] for item in evidence)}
+    metadata = {
+        "version": 1,
+        "id": entry_id,
+        "source_id": source_id,
+        "created_at": datetime.now(UTC).isoformat(),
+        "scope": scope,
+        "evidence_end": max(item["manifest"]["section_end"] for item in evidence),
+    }
     # A user's current track may be later than the requested section. Keep only
     # numeric listening limits here, never that later track's title or prose.
-    body = {"metadata": metadata, "source": source,
-            "progress": {"cutoff_audio_seconds": progress["cutoff_audio_seconds"],
-                         "safe_audio_end_seconds": safe_end},
-            "question": payload["question"], "answer": payload["answer"],
-            "evidence": evidence, "status": "prepared"}
+    body = {
+        "metadata": metadata,
+        "source": source,
+        "progress": {"cutoff_audio_seconds": progress["cutoff_audio_seconds"], "safe_audio_end_seconds": safe_end},
+        "question": payload["question"],
+        "answer": payload["answer"],
+        "evidence": evidence,
+        "status": "prepared",
+    }
     folder = ROOT / "companion/journal" / source_id
     folder.mkdir(parents=True, exist_ok=True)
     # Publish the metadata/body pair together; interrupted writes stay invisible.
@@ -94,10 +105,13 @@ def record(payload, ctx):
 
 
 def permitted(metadata, source_id, limit, entry_id):
-    return (metadata["version"] == 1 and metadata["id"] == entry_id
-            and metadata["source_id"] == source_id
-            and interval(metadata["scope"])["end"] <= limit
-            and number(metadata["evidence_end"]) <= metadata["scope"]["end"])
+    return (
+        metadata["version"] == 1
+        and metadata["id"] == entry_id
+        and metadata["source_id"] == source_id
+        and interval(metadata["scope"])["end"] <= limit
+        and number(metadata["evidence_end"]) <= metadata["scope"]["end"]
+    )
 
 
 def entries(ctx, through):
@@ -112,8 +126,7 @@ def entries(ctx, through):
             metadata = json.loads(path.read_text())
             if permitted(metadata, source_id, limit, path.parent.name):
                 # No chapter names, questions, answers, or other archived prose.
-                rows.append({key: metadata[key] for key in
-                             ("id", "created_at", "scope", "evidence_end")})
+                rows.append({key: metadata[key] for key in ("id", "created_at", "scope", "evidence_end")})
         except (OSError, ValueError, KeyError, TypeError):
             continue  # Incomplete or invalid metadata is never eligible.
     return sorted(rows, key=lambda row: row["created_at"], reverse=True)
@@ -134,9 +147,11 @@ def read_entry(ctx, through, entry_id):
     for item in body["evidence"]:
         manifest = item["manifest"]
         span = interval({"start": manifest["section_start"], "end": manifest["section_end"]})
-        if ((ROOT / manifest["source_audio"]).resolve() != Path(source["path"])
+        if (
+            (ROOT / manifest["source_audio"]).resolve() != Path(source["path"])
             or manifest["source_size"] != source["size"]
-            or manifest["source_mtime_ns"] != source["mtime_ns"]):
+            or manifest["source_mtime_ns"] != source["mtime_ns"]
+        ):
             raise ValueError("Archived evidence does not match the source")
         evidence_ends.append(span["end"])
     if not evidence_ends or max(evidence_ends) != metadata["evidence_end"]:
@@ -151,7 +166,9 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("record", help="Read question/answer/scope/manifests JSON from stdin")
     listing = commands.add_parser("list", help="Show eligible metadata only, newest first")
-    listing.add_argument("--through", required=True, type=float, help="Current query endpoint in absolute audio seconds")
+    listing.add_argument(
+        "--through", required=True, type=float, help="Current query endpoint in absolute audio seconds"
+    )
     listing.add_argument("--limit", type=int, default=5)
     reading = commands.add_parser("read", help="Check metadata before opening one entry")
     reading.add_argument("id")
@@ -164,7 +181,7 @@ def main():
         elif args.command == "list":
             if args.limit < 1:
                 raise ValueError("Limit must be positive")
-            result = entries(ctx, args.through)[:args.limit]
+            result = entries(ctx, args.through)[: args.limit]
         else:
             result = read_entry(ctx, args.through, args.id)
     except (OSError, ValueError, KeyError, TypeError) as error:

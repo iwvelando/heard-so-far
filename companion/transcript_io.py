@@ -1,6 +1,8 @@
 """Check extraction coverage without returning any book text to the caller."""
+
 import json
 import math
+from itertools import pairwise
 
 
 def finite(value):
@@ -17,15 +19,18 @@ def windows(manifest):
         raise ValueError("Invalid extraction interval or chunk configuration")
     breaks = sorted({finite(track["start"]) for track in manifest.get("tracks", [])})
     edges = [start] + [value for value in breaks if start < value < end] + [end]
-    for part_start, part_end in zip(edges, edges[1:]):
+    for part_start, part_end in pairwise(edges):
         cursor = part_start
         while cursor < part_end:
             next_end = min(cursor + core, part_end)
             if next_end <= cursor:
                 raise ValueError("Chunk duration is too small")
-            yield {"core_start": cursor, "core_end": next_end,
-                   "clip_start": max(part_start, cursor - context),
-                   "clip_end": min(part_end, next_end + context)}
+            yield {
+                "core_start": cursor,
+                "core_end": next_end,
+                "clip_start": max(part_start, cursor - context),
+                "clip_end": min(part_end, next_end + context),
+            }
             cursor = next_end
 
 
@@ -59,8 +64,10 @@ def coverage_gaps(words, start, end, threshold=15):
 
 def repeated_runs(lines, minimum=3):
     """Return runs of at least `minimum` consecutive lines with identical normalized text."""
+
     def key(text):
         return "".join(ch for ch in text.lower() if ch.isalnum())
+
     runs, index = [], 0
     while index < len(lines):
         stop = index + 1

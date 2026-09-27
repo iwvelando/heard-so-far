@@ -1,12 +1,16 @@
 """Check Git's tracked and addable files against the reviewed public inventory."""
-from pathlib import Path
+
 import subprocess
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
 # This project is small and holds purchased media alongside source. Require an
 # explicit review when adding public files; ignored local data never belongs here.
-PUBLIC_FILES = set("""
+PUBLIC_FILES = set(
+    """
+.editorconfig
+.gitattributes
 .gitignore
 .github/ISSUE_TEMPLATE/bug_report.yml
 .github/ISSUE_TEMPLATE/config.yml
@@ -22,6 +26,7 @@ LICENSE
 Makefile
 README.md
 SECURITY.md
+ruff.toml
 assets/heard-so-far.svg
 spec/README.md
 spec/external-sources.md
@@ -35,6 +40,9 @@ companion/local-only.config.toml
 companion/locking.py
 companion/model.py
 companion/position.py
+companion/requirements-dev.in
+companion/requirements-dev.txt
+companion/requirements.in
 companion/requirements.txt
 companion/tasks.py
 companion/test_dependabot.py
@@ -42,11 +50,13 @@ companion/test_journal.py
 companion/test_model.py
 companion/test_position.py
 companion/test_public.py
+companion/test_repo_standards.py
 companion/test_tasks.py
 companion/test_transcript_io.py
 companion/transcribe_section.py
 companion/transcript_io.py
-""".split())
+""".split()
+)
 
 
 def check_paths(paths, root=ROOT):
@@ -66,14 +76,20 @@ def check_paths(paths, root=ROOT):
 def main():
     result = subprocess.run(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
-        cwd=ROOT, check=True, capture_output=True,
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
     )
     paths = result.stdout.decode().split("\0")
     paths = [path for path in paths if path]
     problems = check_paths(paths)
     if problems:
-        raise SystemExit("\n".join(problems) + "\nReview these files before staging; do not automatically expand the allowlist.")
-    print(f"Public inventory OK: {len(set(paths))} tracked/addable files. Review contents separately before committing.")
+        raise SystemExit(
+            "\n".join(problems) + "\nReview these files before staging; do not automatically expand the allowlist."
+        )
+    print(
+        f"Public inventory OK: {len(set(paths))} tracked/addable files. Review contents separately before committing."
+    )
 
 
 if __name__ == "__main__":
