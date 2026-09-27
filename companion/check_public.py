@@ -11,7 +11,10 @@ PUBLIC_FILES = set("""
 .github/ISSUE_TEMPLATE/bug_report.yml
 .github/ISSUE_TEMPLATE/config.yml
 .github/ISSUE_TEMPLATE/feature_request.yml
+.github/dependabot.yml
+.github/scripts/dependabot-safe-update.sh
 .github/workflows/check.yml
+.github/workflows/dependabot-merge.yml
 AGENTS.md
 CLAUDE.md
 CONTRIBUTING.md
@@ -34,6 +37,7 @@ companion/model.py
 companion/position.py
 companion/requirements.txt
 companion/tasks.py
+companion/test_dependabot.py
 companion/test_journal.py
 companion/test_model.py
 companion/test_position.py

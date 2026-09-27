@@ -38,6 +38,16 @@ Describe recognition problems with a synthetic example where possible. The
 issue forms ask you to confirm this; report vulnerabilities privately as
 described in [SECURITY.md](SECURITY.md).
 
+## Pull requests and dependency updates
+
+Changes reach `main` only through pull requests that pass both `Check` jobs, and
+they are squash-merged. The pull request title and body become the commit message.
+
+Dependabot proposes GitHub Actions and Python updates weekly. Actions updates
+that change no major version merge automatically after `Check` passes. Python
+updates are always reviewed by hand, because CI cannot run mlx-whisper: on Apple
+silicon, run `make setup`, `make doctor`, and a short transcription before merging.
+
 ## Before a commit
 
 `make check-public` checks Git's tracked and addable paths against a small reviewed

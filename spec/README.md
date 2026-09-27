@@ -127,7 +127,8 @@ does not replace reviewing file contents.
 `make check` runs boundary, transcript-coverage, journal, cleanup, and public-file
 checks using synthetic data. GitHub continuous integration (CI) runs those checks
 without a speech model. It does not validate graphics processing unit (GPU)
-inference, transcription quality, or agent compliance with prose instructions.
+inference, transcription quality, or agent compliance with prose instructions,
+so speech-recognition dependency updates require manual review on Apple silicon.
 
 Changes to boundaries, eligibility, or cleanup need regression tests for the
 failure they prevent. External-source behavior is an instruction-level contract;
