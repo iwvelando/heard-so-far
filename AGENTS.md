@@ -174,6 +174,17 @@ build or maintain a transcript index.
   remove unsupported adjectives and generalizations. Prefer a shorter supported
   answer to a fluent but embellished one. Do not claim guaranteed spoiler safety.
 
+## Character movement logs
+
+When asked to log, record, extend, or export character movements, read and follow
+[skills/log-movements/SKILL.md](skills/log-movements/SKILL.md). It uses the normal
+local-only evidence and listening limits, then writes a complete, versioned
+`movements.md` / `metadata.json` snapshot with `companion/movements.py` under the
+ignored `companion/visualizations/`. Validate metadata before reading an existing
+ledger. A text export needs no theme choice. Preserve stable identities and
+per-claim disclosure chapters; leave the endpoint partial when appropriate.
+The format contract lives in [spec/movements.md](spec/movements.md).
+
 ## Family trees and relationship diagrams
 
 For visualization requests, follow [spec/visualizations.md](spec/visualizations.md).

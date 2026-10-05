@@ -76,6 +76,11 @@ private artifacts. Visual labels and relationships must obey the same evidence
 and listening limits as prose. This workflow does not require automatic
 post-processing of every transcript or a persistent character database.
 
+[movements.md](movements.md) defines the character-movement export workflow,
+versioned Markdown/JSON handoff, immutable snapshots, and producer/consumer
+validation. It uses the same evidence limits; it does not render a diagram or
+maintain an automatic character database.
+
 ## Query journal
 
 The journal supports continuity without making conversation history authoritative.

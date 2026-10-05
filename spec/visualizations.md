@@ -106,8 +106,9 @@ audio, listening limit, and question endpoint. All consulted intervals must fit,
 not just the depicted chapter. Check the linked journal through its metadata-gated
 helper when available. Missing or inconsistent metadata makes the artifact
 ineligible for reuse. External-source artifacts must not enter a local-only task.
-These artifact checks are agent instructions; there is no dedicated validation
-helper or automatic spoiler detector for visual files.
+These diagram artifact checks are agent instructions; there is no automatic
+spoiler detector for visual files. Text movement ledgers use the separate
+[movement contract](movements.md) and its dedicated metadata/format helper.
 
 Keep snapshots separate as progress advances. A theme or layout revision may
 reuse the same eligible evidence table without retranscription when no factual

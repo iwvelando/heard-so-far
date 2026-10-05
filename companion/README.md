@@ -28,6 +28,11 @@ Transcripts are produced by automatic speech recognition (ASR).
   current progress. Metadata excludes archived prose and gates access by source,
   requested scope, and evidence endpoint. See AGENTS.md for the input fields and
   automatic workflow. `journal/` is private, ignored, and survives cleanup.
+- movements.py validates versioned character-movement ledgers and writes immutable
+  full snapshots (`create`, JSON on standard input) under `visualizations/`.
+  Its `check RUN --through SECONDS` gates saved metadata by source and scope before
+  reading prose. [The movement contract](../spec/movements.md) defines input
+  fields, exact tables, and the portable two-file handoff.
 - transcript_io.py validates chunk timing and complete extraction coverage for
   journaling and checks resumed chunks before their words are processed. It does
   not certify the accuracy of ASR or generated answers.

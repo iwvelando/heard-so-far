@@ -101,6 +101,22 @@ request. For a large cast, ask for smaller diagrams by family or group.
 If you want characters' status at a particular moment in the story, say so. That
 can differ from everything the narrator has disclosed by your listening point.
 
+### Character movement logs
+
+Ask for a reusable movement ledger when you want to build or update a map:
+
+> Log character movements through my saved listening position. Preserve earlier
+> supported entries, distinguish travel from plans and reports, and export a
+> complete movements.md and metadata.json pair for my map.
+
+The assistant checks permitted transcript evidence and writes a new private
+snapshot under `companion/visualizations/`. The pair records disclosure chapters,
+uncertainty, and the reading endpoint, including partial chapters. Copy both files
+from the same snapshot into your map's private input location. Existing snapshots
+are preserved; the export does not render or publish a map. Your map still needs
+its own factual and presentation review. See [the contract](spec/movements.md)
+for direct helper commands and the supported format.
+
 ## Optional: cross-reference a source you choose
 
 Local-only reading is the default. If you want a wiki or other reference alongside

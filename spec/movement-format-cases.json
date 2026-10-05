@@ -1,0 +1,308 @@
+{
+  "source": "# Synthetic movement ledger\n\n## Scope and use\nOnly the stated reading endpoint is supported. Geography is illustrative.\n\n## Evidence references\n| Track | Heard title | Occurrence | Chapter | Coverage |\n| --- | --- | --- | --- | --- |\n| 1 | Synthetic chapter | 1 | 1 | partial |\n\n## Characters and companions\n| ID | Display name | Mapping scope |\n| --- | --- | --- |\n| person-a | Person A | Known in Chapter 1; no later status established. |\n\n## Location register\n| ID | Place | Established relationship / limits | Evidence |\n| --- | --- | --- | --- |\n| garden | Garden | Schematic; known in Chapter 1. | Track 1, approximately 00:10. |\n\n## Journey\n| Event | People | Story time / classification | Location sequence and useful context | Evidence | Disclosure chapter |\n| --- | --- | --- | --- | --- | --- |\n| event-a | person-a | Presence; story time unknown | At garden; arrival not established. | Track 1, approximately 00:10. | 1 |\n",
+  "metadata": {
+    "format_version": 1,
+    "movements_sha256": "bdbeaca6192ecbffc0b623da3084c6ec0e764c41ec7e335941e29753a36b9dee",
+    "source_identity": {
+      "resolved_audio_path": "synthetic-audio.m4b",
+      "size": 100,
+      "mtime_ns": 1000
+    },
+    "query_interval": {
+      "start": 0,
+      "end": 50
+    },
+    "consulted_audio_intervals": [
+      {
+        "start": 0,
+        "end": 50
+      }
+    ],
+    "snapshot_mode": "known-through-reading-endpoint",
+    "evidence_mode": "local-only",
+    "reported_track": 1,
+    "reported_track_start_seconds": 0,
+    "reported_elapsed_seconds": 60,
+    "safe_elapsed_seconds": 55,
+    "reading_endpoint": {
+      "chapter": 1,
+      "coverage": "partial"
+    },
+    "transcript_manifests": [
+      "synthetic-manifest.json"
+    ],
+    "selected_theme": null,
+    "rendered": false
+  },
+  "cases": [
+    {
+      "name": "canonical snapshot",
+      "valid": true
+    },
+    {
+      "name": "blank-separated continuation",
+      "valid": true,
+      "append": "\n| event-b | person-a | Plan | Intended garden return; not completed. | Track 1, approximately 00:20. | 1 |\n"
+    },
+    {
+      "name": "repeated header and escaped pipe",
+      "valid": true,
+      "append": "\n| Event | People | Story time / classification | Location sequence and useful context | Evidence | Disclosure chapter |\n| --- | --- | --- | --- | --- | --- |\n| event-b | person-a | Plan | Garden \\| court; undecided. | Track 1, approximately 00:20. | 1 |\n"
+    },
+    {
+      "name": "mismatched pair",
+      "valid": false,
+      "append": "Changed context.\n",
+      "rehash": false
+    },
+    {
+      "name": "unsupported version",
+      "valid": false,
+      "metadata_patch": {
+        "format_version": 2
+      }
+    },
+    {
+      "name": "missing listening origin",
+      "valid": false,
+      "metadata_patch": {
+        "reported_track_start_seconds": null
+      }
+    },
+    {
+      "name": "scope beyond buffer",
+      "valid": false,
+      "metadata_patch": {
+        "query_interval": {
+          "start": 0,
+          "end": 56
+        }
+      }
+    },
+    {
+      "name": "out of scope evidence",
+      "valid": false,
+      "metadata_patch": {
+        "consulted_audio_intervals": [
+          {
+            "start": 0,
+            "end": 51
+          }
+        ]
+      }
+    },
+    {
+      "name": "external evidence",
+      "valid": false,
+      "metadata_patch": {
+        "evidence_mode": "external"
+      }
+    },
+    {
+      "name": "boolean timestamp",
+      "valid": false,
+      "metadata_patch": {
+        "reported_elapsed_seconds": true
+      }
+    },
+    {
+      "name": "infinite timestamp",
+      "valid": false,
+      "metadata_patch": {
+        "reported_elapsed_seconds": "Infinity"
+      }
+    },
+    {
+      "name": "unknown metadata field",
+      "valid": false,
+      "metadata_patch": {
+        "extra": "unsupported"
+      }
+    },
+    {
+      "name": "insufficient buffer",
+      "valid": false,
+      "metadata_patch": {
+        "safe_elapsed_seconds": 56
+      }
+    },
+    {
+      "name": "bad endpoint",
+      "valid": false,
+      "metadata_patch": {
+        "reading_endpoint": {
+          "chapter": 0,
+          "coverage": "partial"
+        }
+      }
+    },
+    {
+      "name": "missing manifest",
+      "valid": false,
+      "metadata_patch": {
+        "transcript_manifests": []
+      }
+    },
+    {
+      "name": "changed table columns",
+      "valid": false,
+      "replace": [
+        "Location sequence and useful contex",
+        "Movemen"
+      ]
+    },
+    {
+      "name": "malformed row",
+      "valid": false,
+      "replace": [
+        "person-a | ",
+        ""
+      ]
+    },
+    {
+      "name": "duplicate identity across blank line",
+      "valid": false,
+      "append": "\n| event-a | person-a | Presence; story time unknown | At garden; arrival not established. | Track 1, approximately 00:10. | 1 |\n"
+    },
+    {
+      "name": "fenced hidden content",
+      "valid": false,
+      "append": "\n```\nhidden\n```\n"
+    },
+    {
+      "name": "pipe without outer delimiters",
+      "valid": false,
+      "append": "\nevent-b | person-a | garden\n"
+    },
+    {
+      "name": "unmapped disclosure chapter",
+      "valid": false,
+      "replace": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "overstated completion",
+      "valid": false,
+      "replace": [
+        "partial",
+        "complete"
+      ]
+    },
+    {
+      "name": "missing required table",
+      "valid": false,
+      "replace": [
+        "Location register\n| ID | Place | Established relationship / limits | Evidence |\n| --- | --- | --- | --- |\n| garden | Garden | Schematic; known in Chapter 1. | Track 1, approximately 00:10. |\n\n## ",
+        ""
+      ]
+    },
+    {
+      "name": "invalid previous snapshot",
+      "valid": false,
+      "metadata_patch": {
+        "previous_snapshot": {
+          "path": "snapshot",
+          "query_interval": {
+            "start": 0,
+            "end": 100
+          }
+        }
+      }
+    },
+    {
+      "name": "skipped heading level",
+      "valid": false,
+      "replace": [
+        "",
+        "##"
+      ]
+    },
+    {
+      "name": "later track",
+      "valid": false,
+      "replace": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "name": "nonmonotonic chapter mapping",
+      "valid": false,
+      "replace": [
+        "",
+        "| 1 | Another occurrence | 2 | 1 | partial |\n"
+      ]
+    },
+    {
+      "name": "empty location register",
+      "valid": true,
+      "replace": [
+        "| garden | Garden | Schematic; known in Chapter 1. | Track 1, approximately 00:10. |\n",
+        ""
+      ]
+    },
+    {
+      "name": "unsafe chapter integer",
+      "valid": false,
+      "metadata_patch": {
+        "reading_endpoint": {
+          "chapter": 9007199254740992,
+          "coverage": "partial"
+        }
+      }
+    },
+    {
+      "name": "large nanosecond identity",
+      "valid": true,
+      "metadata_patch": {
+        "source_identity": {
+          "resolved_audio_path": "synthetic-audio.m4b",
+          "size": 100,
+          "mtime_ns": 1700000000000000000
+        }
+      }
+    },
+    {
+      "name": "numeric integer version",
+      "valid": true,
+      "metadata_patch": {
+        "format_version": 1.0
+      }
+    },
+    {
+      "name": "indented table",
+      "valid": false,
+      "replace": [
+        "| ID | Display name | Mapping scope |",
+        "    | ID | Display name | Mapping scope |"
+      ]
+    },
+    {
+      "name": "orphan separator",
+      "valid": false,
+      "replace": [
+        "| person-a | Person A | Known in Chapter 1; no later status established. |",
+        "| --- | --- | --- |\n| person-a | Person A | Known in Chapter 1; no later status established. |"
+      ]
+    },
+    {
+      "name": "numeric journal identifier",
+      "valid": false,
+      "metadata_patch": {
+        "journal_entry_id": 12345678901234567890123456789012
+      }
+    },
+    {
+      "name": "valid transcript navigation",
+      "valid": true,
+      "append": "\n## Transcript navigation\n| Track link | Transcript lines | Absolute start (seconds) | Consulted end (seconds) | Raw chunks |\n| --- | --- | --- | --- | --- |\n| Track 1 | 1-2 | 0.0 | 50 | synthetic chunks |\n"
+    },
+    {
+      "name": "hex navigation timestamp",
+      "valid": false,
+      "append": "\n## Transcript navigation\n| Track link | Transcript lines | Absolute start (seconds) | Consulted end (seconds) | Raw chunks |\n| --- | --- | --- | --- | --- |\n| Track 1 | 1-2 | 0x0 | 50 | synthetic chunks |\n"
+    }
+  ]
+}
