@@ -1,0 +1,15 @@
+{
+  "name": "heard-so-far/movements",
+  "version": 1,
+  "required_metadata": ["format_version", "movements_sha256", "source_identity", "query_interval", "consulted_audio_intervals", "snapshot_mode", "evidence_mode", "reported_track", "reported_track_start_seconds", "reported_elapsed_seconds", "safe_elapsed_seconds", "reading_endpoint", "transcript_manifests", "selected_theme", "rendered"],
+  "optional_metadata": ["journal_entry_id", "previous_journal_entry_id", "update_interval", "previous_snapshot", "updated_local_date"],
+  "tables": [
+    {"role": "tracks", "required": true, "columns": ["Track", "Heard title", "Occurrence", "Chapter", "Coverage"]},
+    {"role": "characters", "required": true, "columns": ["ID", "Display name", "Mapping scope"]},
+    {"role": "locations", "required": true, "columns": ["ID", "Place", "Established relationship / limits", "Evidence"]},
+    {"role": "movements", "required": true, "columns": ["Event", "People", "Story time / classification", "Location sequence and useful context", "Evidence", "Disclosure chapter"]},
+    {"role": "plans", "required": false, "columns": ["ID", "Consideration", "Mapping treatment", "Evidence", "Disclosure chapter"]},
+    {"role": "last-established", "required": false, "columns": ["Character(s)", "Last established location / unresolved continuation", "Evidence", "Disclosure chapter"]},
+    {"role": "transcripts", "required": false, "columns": ["Track link", "Transcript lines", "Absolute start (seconds)", "Consulted end (seconds)", "Raw chunks"]}
+  ]
+}

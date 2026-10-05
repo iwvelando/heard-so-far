@@ -31,6 +31,10 @@ assets/heard-so-far.svg
 spec/README.md
 spec/external-sources.md
 spec/visualizations.md
+spec/movements.md
+spec/movement-format-v1.json
+spec/movement-format-cases.json
+skills/log-movements/SKILL.md
 companion/LOCAL_ONLY.md
 companion/README.md
 companion/check_public.py
@@ -40,6 +44,8 @@ companion/journal.py
 companion/local-only.config.toml
 companion/locking.py
 companion/model.py
+companion/movements.py
+companion/test_movements.py
 companion/position.py
 companion/requirements-dev.in
 companion/requirements-dev.txt
