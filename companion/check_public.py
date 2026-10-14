@@ -32,13 +32,16 @@ spec/README.md
 spec/external-sources.md
 spec/visualizations.md
 spec/movements.md
+spec/exhibition.md
 spec/movement-format-v1.json
 spec/movement-format-cases.json
 skills/log-movements/SKILL.md
+skills/export-exhibition/SKILL.md
 companion/LOCAL_ONLY.md
 companion/README.md
 companion/check_public.py
 companion/corrections.py
+companion/exhibition.py
 companion/download_model.py
 companion/journal.py
 companion/local-only.config.toml
@@ -53,6 +56,7 @@ companion/requirements.in
 companion/requirements.txt
 companion/tasks.py
 companion/test_corrections.py
+companion/test_exhibition.py
 companion/test_dependabot.py
 companion/test_journal.py
 companion/test_model.py

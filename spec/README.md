@@ -119,6 +119,10 @@ determine whether prose contains a spoiler, or certify answer quality.
 
 ## Local operation and publication
 
+[exhibition.md](exhibition.md) defines explicitly curated public-artwork exports.
+The export skill prepares a separate public catalog without copying private
+questions, listening timestamps, prompts, or passage evidence into the output.
+
 Reading-time ASR loads cached model weights offline, at the pinned revision
 recorded in each transcript manifest. Installing dependencies and
 downloading a model are explicit setup operations. Neither a failed transcription
