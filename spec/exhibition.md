@@ -28,16 +28,40 @@ Each work contains:
   A personal artwork described only as visible interpretation can have an empty
   list; factual scene claims still require evidence through the agent workflow.
 - `asset_source`: a local PNG path for an image work. It is omitted for a supported
-  procedural object.
+  procedural object. An object may instead include `reference_asset_source`, an
+  explicitly reviewed PNG for its inspection panel; it never replaces the model.
+- Alternatively, `panel_assets`: an ordered list of 2–24 objects, each with exactly
+  `title`, `alt`, and `asset_source`. These form one montage with one stable work
+  ID and one placement. Review every image and caption; list order is presentation
+  order. It cannot be combined with `object` or another asset source. Export emits
+  public `panels` with `title`, `alt`, and a hashed `image` path; the work's `image`
+  repeats the first panel's path as its collection cover. Original pixels remain
+  separate, and every panel receives the usual metadata and privacy validation.
 - Optional `private_note`: review rationale, unresolved details, or provenance
   that must not enter the public catalog.
 
 The required public fields are `id`, `title`, `collection`, `medium`, `description`,
 `attribution`, `credit`, `note`, and `alt`, all nonempty strings. `id` is a stable,
 unique lowercase hyphenated slug. `collection` is `exhibition` or `interpretation`.
-The optional `object` field currently accepts only `syrup-glass`, the consumer's
-procedural object identifier. It is an asset capability, not a claim about the
-current book. Image works receive a generated `image` field during export.
+The optional `object` field accepts the procedural display identifiers listed in
+`companion/exhibition.py` (`OBJECTS`). The consumer must support each identifier.
+These include vessels, cases, figures, reliefs and installation studies. It is an asset capability, not a claim about the
+current book. Image works receive a generated `image` field during export. Objects with a
+reference receive `referenceImage`; an object cannot also supply `asset_source`.
+References use the same metadata, checksum, source-review, and privacy checks as
+artworks. The public `alt` describes the reference when present.
+
+Image works may specify `frame`: `gallery` (default), `none`, `walnut`, `aluminum`,
+or `fence-slats`. Use `none` when framing is already present in the pixels; explain
+interpretive display choices in the note. Objects cannot specify a frame.
+
+Wall inscriptions may supply `wallText`, containing 1–200 nonblank public
+characters, with `frame: none` and `asset_source`. The exported `image` is an
+inspection reference; the gallery renders the reviewed wording directly on a
+wall. This cannot be combined with an object, montage or object reference.
+Review the wording against its passage separately from the image, whose imagined
+architecture is not a claim about the exhibition. Typeface and wrapping are
+display interpretations.
 
 An optional `placement` object has exactly `room` (stable lowercase slug), `label`
 (visitor-facing grouping), and `note` (basis or limitation), all nonempty strings.
@@ -87,3 +111,9 @@ required. Public assets and source remain directly accessible outside the foyer.
 Test source changes, rewound progress, missing chunks, unsupported fields, metadata
 inside images, evidence beyond the endpoint, duplicate IDs, and preserved exports
 with synthetic inputs. Never put book-specific selection records in tracked tests.
+
+Panel groups may set `presentation: variants` for alternate realizations of one
+work. The default (or `sequence`) is an ordered montage. Variants must be labeled
+as alternatives throughout the consumer, without implying an original series.
+Object studies must disclose simplification; still references and silent audio
+stations must not be described as completed films or recordings.

@@ -29,8 +29,42 @@ PUBLIC_FIELDS = {
     "alt",
     "object",
     "placement",
+    "frame",
+    "wallText",
+    "presentation",
 }
-REQUIRED_FIELDS = PUBLIC_FIELDS - {"object", "placement"}
+REQUIRED_FIELDS = PUBLIC_FIELDS - {"object", "placement", "frame", "wallText", "presentation"}
+OBJECTS = {
+    "syrup-glass",
+    "diorama",
+    "horse-sculpture",
+    "wax-rider",
+    "boxed-gear",
+    "relic-case",
+    "film-screen",
+    "stump-case",
+    "shard-case",
+    "scree-relief",
+    "stone-boxes",
+    "geology",
+    "ropes",
+    "screen-installation",
+    "bronze-figure",
+    "marble-figure",
+    "hologram-figure",
+    "broken-bowl",
+    "scroll-case",
+    "bone-cliffs",
+    "mesh-cloth",
+    "ash-bin",
+    "plastic-bag",
+    "cartridge-cases",
+    "tin-can",
+    "snowball",
+    "revolver-case",
+    "audio-station",
+}
+FRAMES = {"gallery", "none", "walnut", "aluminum", "fence-slats"}
 
 
 def exact_keys(value, required, optional=()):
@@ -85,11 +119,15 @@ def prepare(payload, ctx):
         raise ValueError("Select at least one work explicitly")
     seen, works, assets, checked = set(), [], {}, {}
     for row in payload["works"]:
-        exact_keys(row, {"public", "reviewed", "evidence"}, {"asset_source", "private_note"})
+        exact_keys(
+            row,
+            {"public", "reviewed", "evidence"},
+            {"asset_source", "reference_asset_source", "panel_assets", "private_note"},
+        )
         if row["reviewed"] is not True:
             raise ValueError("Each selected work needs an explicit public-content review")
         work = row["public"]
-        exact_keys(work, REQUIRED_FIELDS, {"object", "placement"})
+        exact_keys(work, REQUIRED_FIELDS, {"object", "placement", "frame", "wallText", "presentation"})
         if any(not isinstance(work[k], str) or not work[k].strip() for k in REQUIRED_FIELDS):
             raise ValueError("Public work fields must be nonempty text")
         if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", work["id"]) or work["id"] in seen:
@@ -131,18 +169,63 @@ def prepare(payload, ctx):
             if not envelope["start"] <= span["start"] < span["end"] <= envelope["end"]:
                 raise ValueError("Claim interval is outside its evidence")
         public = dict(work)
+        if "frame" in work and (not isinstance(work["frame"], str) or work["frame"] not in FRAMES):
+            raise ValueError("Unsupported frame")
+        if "wallText" in work and (
+            not isinstance(work["wallText"], str)
+            or not 1 <= len(work["wallText"].strip()) <= 200
+            or "object" in work
+            or "panel_assets" in row
+            or "reference_asset_source" in row
+            or work.get("frame") != "none"
+        ):
+            raise ValueError("Wall text needs short public wording, an image reference and no frame or other display")
+        if "presentation" in work and (
+            (not isinstance(work["presentation"], str) or work["presentation"] not in {"sequence", "variants"})
+            or "panel_assets" not in row
+        ):
+            raise ValueError("Presentation needs a supported panel group")
+        if "panel_assets" in row:
+            if "object" in work or "asset_source" in row or "reference_asset_source" in row:
+                raise ValueError("An ordered montage cannot also supply another visual asset")
+            panels = row["panel_assets"]
+            if not isinstance(panels, list) or not 2 <= len(panels) <= 24:
+                raise ValueError("An ordered montage needs between 2 and 24 panels")
+            public["panels"] = []
+            for index, panel in enumerate(panels, 1):
+                exact_keys(panel, {"title", "alt", "asset_source"})
+                if any(not isinstance(value, str) or not value.strip() for value in panel.values()):
+                    raise ValueError("Montage panel fields must be nonempty text")
+                data = png_bytes((ROOT / panel["asset_source"]).resolve())
+                digest = hashlib.sha256(data).hexdigest()[:16]
+                name = f"assets/{work['id']}-panel-{index:02}-{digest}.png"
+                assets[name] = data
+                public["panels"].append({"title": panel["title"], "alt": panel["alt"], "image": name})
+            public["image"] = public["panels"][0]["image"]
+            works.append(public)
+            continue
         if "object" in work:
-            if work["object"] != "syrup-glass" or "asset_source" in row:
+            if (
+                not isinstance(work["object"], str)
+                or work["object"] not in OBJECTS
+                or "asset_source" in row
+                or "frame" in work
+            ):
                 raise ValueError("Unsupported object or ambiguous asset source")
+            source_field, image_field = "reference_asset_source", "referenceImage"
         else:
-            if not isinstance(row.get("asset_source"), str):
+            if "reference_asset_source" in row or not isinstance(row.get("asset_source"), str):
                 raise ValueError("An image work needs an explicit asset source")
-            path = (ROOT / row["asset_source"]).resolve()
+            source_field, image_field = "asset_source", "image"
+        if source_field in row:
+            if not isinstance(row[source_field], str) or not row[source_field].strip():
+                raise ValueError("Asset source must be a nonempty path")
+            path = (ROOT / row[source_field]).resolve()
             data = png_bytes(path)
             digest = hashlib.sha256(data).hexdigest()[:16]
             name = f"assets/{work['id']}-{digest}.png"
             assets[name] = data
-            public["image"] = name
+            public[image_field] = name
         works.append(public)
     return {"version": 1, "title": payload["title"], "author": payload["author"], "works": works}, assets
 

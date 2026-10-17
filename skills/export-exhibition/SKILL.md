@@ -72,7 +72,14 @@ requirement. Do not quote the user's private words unless they selected them for
 
 For spatial or visual changes, honor the conversation's theme choice. Keep artwork
 masters untouched; preserve aspect ratios. Distinguish a frame already in an image
-from a separate modeled frame. Each extension should retain source files and allow
+from a separate modeled frame. Object references use `reference_asset_source` alongside the supported `object`
+identifier. They appear in inspection panels without replacing the model. Use
+`frame` for reviewed panel framing, including `none` for a baked-in frame.
+Use `presentation: variants` for alternative realizations of one work, preserving
+them together without inventing a series. Use `panel_assets` for an explicitly ordered montage: preserve the user’s sequence
+as one work, review every panel, and reserve adjacent space for related companions.
+Do not split an ordered sequence into unrelated collection entries.
+Each extension should retain source files and allow
 later asset replacements without renaming the work.
 
 ## Prepare and hand off
