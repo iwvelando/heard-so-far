@@ -265,6 +265,13 @@ other instruction files; those bypass the journal's per-query eligibility check.
 
 ## Local operations
 
+For a requested public exhibition export, read and follow
+[skills/export-exhibition/SKILL.md](skills/export-exhibition/SKILL.md). This is an
+explicit curation workflow, not permission to publish the private query journal.
+Keep selection records and passage evidence ignored; export only reviewed public
+captions and explicitly selected assets. The creator's listening limit still
+applies even when the public audience is expected to have finished the book.
+
 In user-facing documentation, expand acronyms on first use. Lead onboarding with
 the conversational workflow; present direct helper commands as an alternative.
 Keep the README focused on what users do and can expect. Put operational agent
